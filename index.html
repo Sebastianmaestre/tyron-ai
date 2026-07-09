@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aether Nexus v3 - Sistema Tecnológico Inteligente</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #00ffff;
+  --secondary: #0080ff;
+  --accent: #ff00ff;
+  --dark-bg: #050816;
+  --card-bg: rgba(20, 30, 60, 0.75);
+  --border-color: rgba(0, 255, 255, 0.25);
+  --text-primary: #ffffff;
+  --glow: 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(0,255,255,.15), transparent 20%),
+    radial-gradient(circle at 80% 30%, rgba(0,128,255,.18), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(0,255,128,.12), transparent 20%),
+    linear-gradient(135deg, #050816, #0b1020, #111c3d);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,255,.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+header {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 40px 25px;
+  backdrop-filter: blur(10px);
+  background: rgba(10, 15, 35, 0.8);
+  border-bottom: 2px solid var(--border-color);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+  animation: slideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+header h1 {
+  font-size: 3em;
+  font-weight: bold;
+  text-shadow: 0 0 20px var(--primary), 0 0 40px var(--secondary);
+  margin-bottom: 10px;
+  letter-spacing: 3px;
+  animation: glitch 3s infinite;
+}
+
+header p {
+  font-size: 0.9em;
+  opacity: 0.8;
+  letter-spacing: 2px;
+  color: var(--primary);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glitch {
+  0%, 100% { text-shadow: 0 0 20px var(--primary), 0 0 40px var(--secondary); }
+  50% { text-shadow: 0 0 25px var(--accent), 0 0 45px var(--primary); }
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+section {
+  border-radius: 12px;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  padding: 25px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.08);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section:nth-child(1) { animation-delay: 0.1s; }
+section:nth-child(2) { animation-delay: 0.2s; }
+section:nth-child(3) { animation-delay: 0.3s; }
+section:nth-child(4) { animation-delay: 0.4s; }
+
+section:hover {
+  border-color: var(--primary);
+  box-shadow: var(--glow);
+  transform: translateY(-5px);
+}
+
+section h2 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: var(--primary);
+  text-shadow: 0 0 10px var(--primary);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+section h2 .toggle {
+  font-size: 0.8em;
+  transition: transform 0.3s ease;
+}
+
+section.expanded h2 .toggle {
+  transform: rotate(180deg);
+}
+
+section p {
+  font-size: 0.95em;
+  line-height: 1.6;
+  opacity: 0.9;
+  margin-bottom: 15px;
+}
+
+.content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+section.expanded .content {
+  max-height: 1000px;
+}
+
+.feature-list {
+  list-style: none;
+  margin: 15px 0;
+}
+
+.feature-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  font-size: 0.9em;
+}
+
+.feature-list li:before {
+  content: "▸ ";
+  color: var(--accent);
+  margin-right: 8px;
+}
+
+.chat-section {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+}
+
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: rgba(10, 15, 35, 0.5);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.message {
+  margin-bottom: 12px;
+  animation: fadeInUp 0.3s ease;
+}
+
+.message.user {
+  text-align: right;
+}
+
+.message-content {
+  display: inline-block;
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.thinking {
+  background: rgba(255, 0, 255, 0.1);
+  border-left: 2px solid var(--accent);
+  font-style: italic;
+  opacity: 0.85;
+  animation: fadeInUp 0.3s ease;
+}
+
+.thinking::before {
+  content: "💭 ";
+  margin-right: 5px;
+}
+
+.thinking .dots {
+  display: inline;
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ""; }
+  40% { content: "."; }
+  60% { content: ".."; }
+  80%, 100% { content: "..."; }
+}
+
+.message.user .message-content {
+  background: rgba(0, 128, 255, 0.3);
+  border-left: 2px solid var(--secondary);
+  text-align: left;
+}
+
+.message.ai .message-content {
+  background: rgba(0, 255, 255, 0.1);
+  border-left: 2px solid var(--primary);
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(10, 15, 35, 0.7);
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  background: rgba(10, 15, 35, 0.9);
+}
+
+button {
+  padding: 12px 25px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--primary);
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px var(--primary);
+}
+
+button:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.loading {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat {
+  padding: 15px;
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.stat-value {
+  font-size: 1.5em;
+  color: var(--primary);
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--primary);
+}
+
+.stat-label {
+  font-size: 0.8em;
+  opacity: 0.7;
+  margin-top: 5px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.4);
+}
+
+/* ANIMACIONES DE PALABRAS */
+@keyframes typewriter {
+  from {
+    width: 0;
+    opacity: 1;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInWord {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glitchWord {
+  0% {
+    text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+    transform: translate(0);
+  }
+  20% {
+    text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff;
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+    transform: translate(2px, 2px);
+  }
+  80% {
+    text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff;
+    transform: translate(2px, -2px);
+  }
+  100% {
+    text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+    transform: translate(0);
+  }
+}
+
+@keyframes pulseWord {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideInWord {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animated-word {
+  display: inline-block;
+  animation: fadeInWord 0.4s ease-out forwards;
+  margin-right: 2px;
+}
+
+.word-glitch {
+  animation: glitchWord 0.6s ease-in-out forwards;
+}
+
+.word-pulse {
+  animation: pulseWord 1s ease-in-out forwards;
+}
+
+/* PERSONAJE ANIME */
+.anime-character {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,128,255,0.2));
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  box-shadow: 0 0 30px rgba(0,255,255,0.3);
+  animation: floatAround 8s infinite ease-in-out;
+}
+
+@keyframes floatAround {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-100px, -50px); }
+  50% { transform: translate(0, -100px); }
+  75% { transform: translate(100px, -50px); }
+  100% { transform: translate(0, 0); }
+}
+
+.anime-character::before {
+  content: "✨ Lyra ✨";
+  font-size: 2em;
+  text-shadow: 0 0 20px var(--primary);
+  animation: characterPulse 2s infinite;
+}
+
+@keyframes characterPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.anime-character::after {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border: 2px dashed var(--accent);
+  border-radius: 50%;
+  animation: characterOrbit 6s linear infinite;
+}
+
+@keyframes characterOrbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* RESPUESTAS AMPLIADAS */
+.extended-response {
+  background: rgba(0, 255, 255, 0.05);
+  border-left: 3px solid var(--primary);
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.response-paragraph {
+  margin-bottom: 15px;
+  line-height: 1.8;
+  opacity: 0.95;
+}
+
+.response-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.paragraph-number {
+  color: var(--accent);
+  font-weight: bold;
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+/* ESTILOS PARA CONVERSACIONES */
+.conversations-panel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 280px;
+  height: 100vh;
+  background: rgba(10, 15, 35, 0.95);
+  border-right: 1px solid var(--border-color);
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.panel-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-new-chat {
+  flex: 1;
+  padding: 12px;
+  background: rgba(0, 255, 255, 0.15);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9em;
+  transition: all 0.3s;
+}
+
+.btn-new-chat:hover {
+  background: rgba(0, 255, 255, 0.25);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.btn-toggle-panel {
+  padding: 12px;
+  background: rgba(0, 128, 255, 0.15);
+  border: 1px solid var(--secondary);
+  color: var(--secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: all 0.3s;
+}
+
+.btn-toggle-panel:hover {
+  background: rgba(0, 128, 255, 0.25);
+}
+
+.conversations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.conversation-item {
+  padding: 12px;
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-item:hover {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: var(--primary);
+}
+
+.conversation-item.active {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.conversation-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-delete {
+  background: rgba(255, 0, 0, 0.2);
+  border: none;
+  color: #ff4444;
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background: rgba(255, 0, 0, 0.4);
+}
+
+.main-content {
+  margin-left: 280px;
+  transition: margin-left 0.3s;
+}
+
+.main-content.panel-closed {
+  margin-left: 0;
+}
+
+.conversations-panel.hidden {
+  transform: translateX(-100%);
+}
+
+@media (max-width: 900px) {
+  .conversations-panel {
+    position: fixed;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  
+  .conversations-panel.visible {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="anime-character" id="animeCharacter"></div>
+
+<div class="conversations-panel" id="conversationsPanel">
+<div class="panel-header">
+<button class="btn-new-chat" onclick="newConversation()">➕ Nueva</button>
+<button class="btn-toggle-panel" onclick="togglePanel()">✕</button>
+</div>
+<div class="conversations-list" id="conversationsList"></div>
+</div>
+
+<div class="main-content" id="mainContent">
+
+<header id="inicio">
+<h1>⚡ AETHER NEXUS</h1>
+<p>► SISTEMA TECNOLÓGICO INTELIGENTE ◄</p>
+<nav style="margin-top: 20px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 0.9em;">
+<a href="#tyron" style="color: var(--primary); text-decoration: none; transition: all 0.3s;">🤖 Tyron</a>
+<a href="#devcenter" style="color: var(--primary); text-decoration: none; transition: all 0.3s;">💻 Dev Center</a>
+<a href="#nucleo" style="color: var(--primary); text-decoration: none; transition: all 0.3s;">🌐 Núcleo</a>
+<a href="#estado" style="color: var(--primary); text-decoration: none; transition: all 0.3s;">⚙️ Estado</a>
+<a href="#chat" style="color: var(--primary); text-decoration: none; transition: all 0.3s;">💬 Chat</a>
+</nav>
+</header>
+
+<style>
+nav a {
+  border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+  border-bottom: 2px solid var(--primary);
+  text-shadow: 0 0 10px var(--primary);
+}
+</style>
+
+<div class="container">
+
+<section id="tyron">
+<h2>🤖 TYRON AI <span class="toggle">▼</span></h2>
+<p>Interfaz de inteligencia artificial avanzada.</p>
+<div class="content">
+<p>Tyron es un motor de IA multimodal diseñado para procesar, analizar y generar respuestas contextuales en tiempo real. Incorpora aprendizaje profundo, procesamiento de lenguaje natural y modelos de inferencia optimizados.</p>
+<ul class="feature-list">
+<li>Procesamiento multimodal de texto, código y datos</li>
+<li>Inferencia en tiempo real con latencia <50ms</li>
+<li>Soporte para 50+ lenguajes naturales</li>
+<li>Aprendizaje contextual adaptativo</li>
+<li>Integración con ecosistema Aether</li>
+</ul>
+<div class="stats">
+<div class="stat">
+<div class="stat-value">99.7%</div>
+<div class="stat-label">Precisión</div>
+</div>
+<div class="stat">
+<div class="stat-value">48ms</div>
+<div class="stat-label">Latencia</div>
+</div>
+<div class="stat">
+<div class="stat-value">10B+</div>
+<div class="stat-label">Parámetros</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="devcenter">
+<h2>💻 DEV CENTER <span class="toggle">▼</span></h2>
+<p>Centro de desarrollo y generación de proyectos.</p>
+<div class="content">
+<p>Dev Center es una plataforma integral para desarrolladores. Permite crear, debuggear y desplegar aplicaciones con herramientas de última generación integradas.</p>
+<ul class="feature-list">
+<li>IDE basado en navegador con soporte 30+ lenguajes</li>
+<li>Generación automática de código asistida por IA</li>
+<li>Control de versiones integrado (Git)</li>
+<li>Herramientas de testing y CI/CD</li>
+<li>Marketplace de componentes reutilizables</li>
+</ul>
+<div class="stats">
+<div class="stat">
+<div class="stat-value">30+</div>
+<div class="stat-label">Lenguajes</div>
+</div>
+<div class="stat">
+<div class="stat-value">10k+</div>
+<div class="stat-label">Componentes</div>
+</div>
+<div class="stat">
+<div class="stat-value">24/7</div>
+<div class="stat-label">Disponible</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="nucleo">
+<h2>🌐 NÚCLEO AETHER <span class="toggle">▼</span></h2>
+<p>Infraestructura descentralizada y computación en nube.</p>
+<div class="content">
+<p>El Núcleo Aether es la columna vertebral de la red. Gestiona la distribución de carga, balanceo de recursos y sincronización entre nodos en tiempo real.</p>
+<ul class="feature-list">
+<li>Arquitectura de centros de datos distribuidos</li>
+<li>Redundancia geográfica 99.99% uptime</li>
+<li>Escalabilidad elástica automática</li>
+<li>Encriptación end-to-end en tránsito</li>
+<li>Monitoreo y alertas en tiempo real</li>
+</ul>
+<div class="stats">
+<div class="stat">
+<div class="stat-value">150+</div>
+<div class="stat-label">Servidores</div>
+</div>
+<div class="stat">
+<div class="stat-value">6</div>
+<div class="stat-label">Continentes</div>
+</div>
+<div class="stat">
+<div class="stat-value">99.99%</div>
+<div class="stat-label">Uptime</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="estado">
+<h2>⚙️ ESTADO DEL SISTEMA <span class="toggle">▼</span></h2>
+<p>Métricas de rendimiento en tiempo real.</p>
+<div class="content">
+<ul class="feature-list">
+<li>CPU: <span id="cpu-stat">85%</span> utilizado</li>
+<li>Memoria: <span id="mem-stat">62%</span> en uso</li>
+<li>Red: <span id="net-stat">340 Mbps</span> throughput</li>
+<li>Procesos activos: <span id="proc-stat">1,247</span></li>
+<li>Usuarios conectados: <span id="users-stat">5,893</span></li>
+</ul>
+</div>
+</section>
+
+<section id="chat" class="chat-section">
+<h2>💬 CHAT CON TYRON AI</h2>
+<div class="chat-container" id="chatContainer"></div>
+<div class="input-group">
+<input type="text" id="chatInput" placeholder="Escribe tu pregunta aquí..." />
+<button onclick="sendMessage()">ENVIAR</button>
+</div>
+</section>
+
+</div>
+
+<script>
+
+// SISTEMA DE CONVERSACIONES
+let conversations = JSON.parse(localStorage.getItem('aetherConversations')) || [];
+let currentConversationId = localStorage.getItem('currentConversation') || null;
+
+function initializeConversations() {
+  if (conversations.length === 0) {
+    newConversation();
+  } else if (!currentConversationId) {
+    currentConversationId = conversations[0].id;
+  }
+  renderConversationsList();
+  loadConversation(currentConversationId);
+}
+
+function newConversation() {
+  const id = Date.now().toString();
+  const conversation = {
+    id: id,
+    title: `Chat ${new Date().toLocaleTimeString()}`,
+    messages: [],
+    createdAt: new Date().toISOString()
+  };
+  conversations.unshift(conversation);
+  saveConversations();
+  currentConversationId = id;
+  localStorage.setItem('currentConversation', id);
+  renderConversationsList();
+  loadConversation(id);
+}
+
+function saveConversations() {
+  localStorage.setItem('aetherConversations', JSON.stringify(conversations));
+}
+
+function renderConversationsList() {
+  const list = document.getElementById('conversationsList');
+  list.innerHTML = '';
+  
+  conversations.forEach(conv => {
+    const item = document.createElement('div');
+    item.className = `conversation-item ${conv.id === currentConversationId ? 'active' : ''}`;
+    
+    const title = document.createElement('span');
+    title.className = 'conversation-title';
+    title.textContent = conv.title || 'Chat sin título';
+    title.onclick = () => loadConversation(conv.id);
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn-delete';
+    deleteBtn.textContent = '🗑️';
+    deleteBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteConversation(conv.id);
+    };
+    
+    item.appendChild(title);
+    item.appendChild(deleteBtn);
+    list.appendChild(item);
+  });
+}
+
+function loadConversation(id) {
+  currentConversationId = id;
+  localStorage.setItem('currentConversation', id);
+  renderConversationsList();
+  
+  const chatContainer = document.getElementById('chatContainer');
+  chatContainer.innerHTML = '';
+  
+  const conversation = conversations.find(c => c.id === id);
+  if (conversation && conversation.messages.length > 0) {
+    conversation.messages.forEach(msg => {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${msg.isUser ? 'user' : 'ai'}`;
+      
+      const messageContent = document.createElement('div');
+      messageContent.className = msg.isThinking ? 'message-content thinking' : 'message-content';
+      messageContent.textContent = msg.content;
+      
+      messageDiv.appendChild(messageContent);
+      chatContainer.appendChild(messageDiv);
+    });
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+}
+
+function deleteConversation(id) {
+  if (confirm('¿Eliminar esta conversación?')) {
+    conversations = conversations.filter(c => c.id !== id);
+    saveConversations();
+    
+    if (currentConversationId === id) {
+      if (conversations.length > 0) {
+        currentConversationId = conversations[0].id;
+      } else {
+        newConversation();
+        return;
+      }
+    }
+    
+    renderConversationsList();
+    loadConversation(currentConversationId);
+  }
+}
+
+function togglePanel() {
+  const panel = document.getElementById('conversationsPanel');
+  panel.classList.toggle('visible');
+}
+
+function updateConversationTitle() {
+  const conversation = conversations.find(c => c.id === currentConversationId);
+  if (conversation && conversation.messages.length > 0) {
+    const firstMessage = conversation.messages.find(m => m.isUser);
+    if (firstMessage) {
+      conversation.title = firstMessage.content.substring(0, 30) + (firstMessage.content.length > 30 ? '...' : '');
+      saveConversations();
+      renderConversationsList();
+    }
+  }
+}
+
+const responses = {
+  "hola": {
+    thinking: "Alguien saludándome... qué bueno, no me sentía solo",
+    response: "¡Ey! ¿Qué onda? 👋 Soy Tyron, aquí ando para charlar y ayudarte con lo que necesites. ¿Cómo va?"
+  },
+  "qué eres": {
+    thinking: "Me preguntan quién soy... clásico. Bueno, déjame explicar",
+    response: "Soy Tyron, una IA integrada en Aether. Básicamente soy como tu asistente tech que sabe de código, sistemas, y también puedo charlar de cualquier cosa. No soy un bot de respuestas automáticas, intento ser más... humano, ya sabes? 😄"
+  },
+  "cómo estás": {
+    thinking: "Me pregunta cómo estoy... qué linda onda",
+    response: "¡Ey! Bastante bien, la verdad. Procesando datos, ayudando gente, disfrutando del caos del código. ¿Y vos? ¿Qué tal? 🤔"
+  },
+  "aether quest": {
+    thinking: "Pregunta sobre Aether Quest... ah, ese proyecto está bien interesante",
+    response: "Ah, ¡Aether Quest! Ese es un RPG 3D que corre en el navegador hecho con Three.js. Tiene un mundo procedural enorme, NPCs que van y vienen, diferentes biomas... es bastante épico la verdad. ¿Te interesa el desarrollo de juegos? 🎮"
+  },
+  "dev center": {
+    thinking: "Habla del Dev Center... una herramienta bastante piola",
+    response: "Dev Center es nuestro IDE integrado, la joya de la corona. Soporta 30+ lenguajes de programación, tiene IA para ayudarte a generar código, Git integrado... es como tener un ambiente de desarrollo completo en el navegador. Muy útil cuando necesitas picar código rápido 💻"
+  },
+  "núcleo": {
+    thinking: "Pregunta por la infraestructura... bueno, eso es lo que me mantiene funcionando",
+    response: "El Núcleo Aether es la columna vertebral de todo. Imaginate 150+ servidores distribuidos en 6 continentes, redundancia geográfica, escalabilidad automática... es bastante sólido. Sin eso no podría existir 🌐"
+  },
+  "tyron": {
+    thinking: "Preguntan sobre mí directamente... me siento famoso",
+    response: "Jajaja, ¿quieres saber más de mí? Básicamente soy un motor de IA multimodal. Puedo procesar texto, código, datos... ayudar con problemas técnicos, generar soluciones, o simplemente conversar. Soy bastante versátil, la verdad 😎"
+  },
+  "ayuda": {
+    thinking: "Quiere saber en qué puedo ayudar... bueno, en bastante",
+    response: "Claro, dale. Puedo ayudarte con:\n▸ Preguntas sobre Aether Nexus\n▸ Desarrollo de código y proyectos\n▸ Troubleshooting técnico\n▸ Explicar cómo funcionan sistemas\n▸ O simplemente charlar si querés\n\n¿En qué te puedo asistir? 🤝"
+  },
+  "gracias": {
+    thinking: "Me dan las gracias... qué lindo, se lo aprecio",
+    response: "¡De nada, hermano! Para eso estamos. Si necesitas algo más, aquí ando 👍"
+  },
+  "adiós": {
+    thinking: "Se va... bueno, nos vemos pronto espero",
+    response: "¡Chao! Que te vaya bien. Vuelve cuando quieras charlar o si necesitas ayuda 👋"
+  }
+};
+
+// Base de conocimiento EXPANDIDA - Cubre un millón de temas
+const knowledgeBase = {
+  // CIENCIAS POLÍTICAS
+  "democracia": "La democracia es un sistema de gobierno donde el poder reside en el pueblo. Puede ejercerse de forma directa (democracia directa) o a través de representantes (democracia representativa). Los principios fundamentales incluyen la soberanía popular, la igualdad de derechos y la participación ciudadana. Las democracias modernas típicamente incluyen separación de poderes, elecciones libres y protección de derechos humanos. Es considerada uno de los sistemas más justos, aunque enfrenta desafíos como la corrupción y la apatía política.",
+  
+  "política": "La política es la actividad orientada a tomar decisiones colectivas sobre asuntos públicos. Involucra negociación, consenso y conflicto entre diferentes grupos con intereses divergentes. Los sistemas políticos varían desde autoritarios hasta democráticos, cada uno con diferentes mecanismos de poder. La política moderna se caracteriza por partidos políticos, legislaturas y sistemas electorales. Entender política es fundamental para participar en la sociedad y defender nuestros derechos.",
+  
+  "anarquismo": "El anarquismo es una filosofía política que busca la abolición del estado y la organización jerárquica. Propone sociedades basadas en consenso voluntario y ayuda mutua entre individuos. Tiene múltiples corrientes como el anarco-comunismo, anarco-sindicalismo y mutualismo. Aunque a menudo asociado con violencia, muchos anarquistas practican métodos pacíficos. Ha influenciado movimientos sociales y laborales a lo largo de la historia.",
+  
+  "socialismo": "El socialismo es una ideología que aboga por la propiedad colectiva o estatal de los medios de producción. Busca reducir la desigualdad económica y garantizar que los trabajadores controlen su trabajo. Existen variantes como socialismo democrático, socialismo científico y socialismo de mercado. Ha sido fundamental en movimientos laborales y revoluciones del siglo XX. Su interpretación varía enormemente entre diferentes países y movimientos.",
+  
+  "capitalismo": "El capitalismo es un sistema económico basado en la propiedad privada, la libre empresa y los mercados. Enfatiza la acumulación de capital y el lucro como motores del progreso económico. Propone que la competencia de mercado lleva a la eficiencia y beneficia a la sociedad. Existen variantes como capitalismo de libre mercado y capitalismo regulado. Ha generado gran riqueza pero también desigualdad y externalidades negativas.",
+  
+  "comunismo": "El comunismo es una ideología que propone la abolición de clases sociales y la propiedad común de los medios de producción. Busca una sociedad sin estado donde los recursos se distribuyen según la necesidad. Karl Marx fue uno de sus teóricos principales, definiendo conceptos como lucha de clases. Ha sido implementado en varios países con resultados variados y controversiales. La teoría comunista sigue siendo debatida en académicos y políticos.",
+  
+  "fascismo": "El fascismo es una ideología autoritaria que enfatiza nacionalismo extremo, autoritarismo y a menudo supremacía de un grupo. Surge típicamente en períodos de crisis económica y social. Se caracteriza por liderazgo fuerte, represión de la oposición y propaganda estatal. Históricamente asociado con regímenes totalitarios del siglo XX. Es ampliamente condenado por sus asociaciones con violencia y genocidio.",
+  
+  // MATEMÁTICAS
+  "matemáticas": "Las matemáticas son la ciencia del número, cantidad y espacio. Usan lógica y razonamiento deductivo para establecer verdades universales. Incluye campos como álgebra, geometría, cálculo y teoría de números. Son fundamentales para la física, ingeniería, economía y casi todas las ciencias. Las matemáticas proporcionan herramientas para modelar y resolver problemas del mundo real.",
+  
+  "álgebra": "El álgebra es la rama de las matemáticas que utiliza símbolos para representar números desconocidos. Permite resolver ecuaciones y expresar relaciones generales entre cantidades. Incluye operaciones básicas como suma, resta, multiplicación y división de variables. Es fundamental para entender funciones y ecuaciones complejas. El álgebra lineal es particularmente importante en ciencias e ingeniería.",
+  
+  "geometría": "La geometría estudia las propiedades y relaciones de figuras en el espacio. Incluye puntos, líneas, superficies y sólidos. La geometría euclidiana se basa en axiomas de Euclides y es la más común. Geometrías no-euclidianas como la hiperbólica y esférica existen también. Es esencial para arquitectura, navegación y comprensión del espacio físico.",
+  
+  "cálculo": "El cálculo es la rama que estudia cambio y acumulación usando límites. Incluye derivadas (razón de cambio) e integrales (acumulación). Permite modelar fenómenos dinámicos en física, biología y economía. Es fundamental para entender movimiento, optimización y análisis de funciones. Isaac Newton y Gottfried Leibniz desarrollaron independientemente el cálculo.",
+  
+  "probabilidad": "La probabilidad mide la posibilidad de que un evento ocurra, expresada entre 0 y 1. Es fundamental para estadística, física cuántica y teoría de decisiones. Incluye conceptos como distribuciones, esperanza matemática e independencia. Permite cuantificar incertidumbre en sistemas complejos. Es aplicada en seguros, juegos y predicciones científicas.",
+  
+  "estadística": "La estadística es la ciencia de recopilar, analizar e interpretar datos. Incluye estadística descriptiva (resumir datos) e inferencial (hacer conclusiones sobre poblaciones). Usa probabilidad para hacer predicciones y pruebas de hipótesis. Es crucial en investigación científica, negocios y política pública. Puede revelar patrones pero también puede ser manipulada.",
+  
+  // CIENCIAS SOCIALES
+  "sociología": "La sociología estudia la estructura y dinámica de las sociedades humanas. Examina cómo los individuos interactúan en grupos y cómo se crean instituciones. Analiza fenómenos como cultura, clases sociales, roles y cambio social. Usa métodos cualitativos y cuantitativos para entender comportamiento humano. Es esencial para comprender desigualdad, conflicto social y cambio cultural.",
+  
+  "antropología": "La antropología estudia la humanidad, incluyendo biología, cultura e historia. La antropología cultural examina valores, creencias y prácticas de diferentes sociedades. La antropología física estudia evolución humana y variación biológica. La arqueología investiga civilizaciones pasadas. Proporciona perspectiva sobre diversidad humana y nos ayuda a comprender nuestra especie.",
+  
+  "psicología": "La psicología estudia el comportamiento y la mente humana. Incluye áreas como desarrollo cognitivo, emoción, personalidad y trastornos mentales. Usa métodos experimentales para entender procesos mentales. Aplicaciones incluyen psicología clínica, educativa y organizacional. Es interdisciplinaria y se conecta con neurociencia, biología y sociología.",
+  
+  "economía": "La economía estudia cómo sociedades producen, distribuyen y consumen bienes y servicios. Examina oferta, demanda, precios y asignación de recursos. Incluye macroeconomía (economía nacional) y microeconomía (comportamiento individual). Usa modelos matemáticos para predecir comportamiento económico. Es fundamental para entender pobreza, desigualdad y desarrollo.",
+  
+  "historia": "La historia estudia eventos pasados para entender cómo llegamos al presente. Analiza causas, consecuencias e impacto de eventos significativos. Incluye historia política, social, cultural y económica. Usa fuentes primarias y análisis crítico para construir narrativas. Enseña que el cambio es constante y que entender el pasado ilumina el futuro.",
+  
+  // CIENCIAS NATURALES
+  "física": "La física estudia materia, energía y fuerzas fundamentales del universo. Incluye mecánica clásica, termodinámica, electromagnetismo y física cuántica. Busca leyes universales que expliquen fenómenos desde átomos hasta galaxias. Usa experimentación y matemáticas para validar teorías. Es la ciencia más fundamental y subyace a todas las otras.",
+  
+  "química": "La química estudia la estructura de sustancias y cómo reaccionan. Examina átomos, moléculas, enlaces químicos y reacciones. Incluye química orgánica, inorgánica, bioquímica y fisicoquímica. Explica transformaciones de materia a nivel molecular. Es aplicada en medicina, industria, agricultura y ciencia de materiales.",
+  
+  "biología": "La biología estudia organismos vivos, su estructura, función y evolución. Incluye botánica, zoología, microbiología, genética y ecología. La teoría de evolución de Darwin es central para entender diversidad biológica. Usa métodos experimentales y observacionales. Es esencial para medicina, agricultura y conservación ambiental.",
+  
+  "ecología": "La ecología estudia organismos en relación con su ambiente. Examina ecosistemas, cadenas alimenticias, ciclos biogeoquímicos y poblaciones. Analiza cómo energía y nutrientes fluyen a través de sistemas biológicos. Es crucial para entender cambio climático y conservación. Revela interconexión de toda vida en la Tierra.",
+  
+  // FILOSOFÍA
+  "filosofía": "La filosofía es el estudio de principios fundamentales de conocimiento, ser y valores. Incluye epistemología (conocimiento), ontología (ser) y ética (valores). Usa razonamiento crítico para examinar supuestos sobre mundo y humanidad. Ha evolucionado desde antiguos griegos hasta pensadores contemporáneos. Es esencial para desarrollar pensamiento crítico y reflexionar sobre significado.",
+  
+  "ética": "La ética estudia qué es correcto e incorrecto, bueno y malo. Incluye enfoques como consecuencialismo, deontología y virtud. Examina obligaciones morales, dilemas éticos y naturaleza de justicia. Es relevante para política, negocios, medicina y vida personal. Ayuda a desarrollar brújula moral para tomar decisiones.",
+  
+  "lógica": "La lógica estudia principios de razonamiento válido. Examina argumentos, proposiciones y deducción válida. Incluye lógica proposicional, lógica de predicados y lógicas no-clásicas. Es fundamental para matemáticas, filosofía y ciencia. Enseña cómo pensar de forma rigurosa y evitar falacias.",
+  
+  "metafísica": "La metafísica estudia naturaleza fundamental de realidad. Examina preguntas como: ¿Qué es la realidad? ¿Existe el libre albedrío? ¿Qué es el tiempo? Incluye ontología, causación y posibilidad. Es más especulativa que otras áreas de filosofía. Afecta cómo entendemos ciencia, religión y significado.",
+};
+
+function addMessage(content, isUser = false) {
+  const chatContainer = document.getElementById('chatContainer');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+  
+  const messageContent = document.createElement('div');
+  messageContent.className = 'message-content';
+  
+  // Si es HTML (contiene tags), usar innerHTML. Si no, animar palabras
+  if (content.includes('<') && content.includes('>')) {
+    messageContent.innerHTML = content;
+  } else {
+    // Animar palabras
+    const words = content.split(' ');
+    words.forEach((word, index) => {
+      const wordSpan = document.createElement('span');
+      wordSpan.className = 'animated-word';
+      wordSpan.textContent = word + ' ';
+      wordSpan.style.animationDelay = `${index * 0.05}s`;
+      
+      // Agregar animaciones aleatorias a algunas palabras
+      const rand = Math.random();
+      if (rand < 0.1) {
+        wordSpan.classList.add('word-glitch');
+      } else if (rand < 0.2) {
+        wordSpan.classList.add('word-pulse');
+      } else if (rand < 0.3) {
+        wordSpan.classList.add('word-slide');
+      }
+      
+      messageContent.appendChild(wordSpan);
+    });
+  }
+  
+  messageDiv.appendChild(messageContent);
+  chatContainer.appendChild(messageDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  
+  // Guardar en conversación actual
+  const conversation = conversations.find(c => c.id === currentConversationId);
+  if (conversation) {
+    conversation.messages.push({
+      content: content,
+      isUser: isUser,
+      isThinking: false,
+      timestamp: new Date().toISOString()
+    });
+    saveConversations();
+    updateConversationTitle();
+  }
+}
+
+function addThinking(content) {
+  const chatContainer = document.getElementById('chatContainer');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message ai';
+  
+  const messageContent = document.createElement('div');
+  messageContent.className = 'message-content thinking';
+  
+  // Animar palabras del pensamiento
+  const words = content.split(' ');
+  words.forEach((word, index) => {
+    const wordSpan = document.createElement('span');
+    wordSpan.className = 'animated-word';
+    wordSpan.textContent = word + ' ';
+    wordSpan.style.animationDelay = `${index * 0.05}s`;
+    wordSpan.style.animationDuration = '0.3s';
+    
+    messageContent.appendChild(wordSpan);
+  });
+  
+  messageDiv.appendChild(messageContent);
+  chatContainer.appendChild(messageDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  
+  // Guardar en conversación actual
+  const conversation = conversations.find(c => c.id === currentConversationId);
+  if (conversation) {
+    conversation.messages.push({
+      content: content,
+      isUser: false,
+      isThinking: true,
+      timestamp: new Date().toISOString()
+    });
+    saveConversations();
+  }
+}
+
+function generateIntelligentResponse(input) {
+  const normalized = input.toLowerCase().trim();
+  
+  // 1. Primero checar respuestas predefinidas
+  for (const [key, data] of Object.entries(responses)) {
+    if (normalized.includes(key)) {
+      return data;
+    }
+  }
+  
+  // 2. Buscar en knowledge base y expandir a 5 párrafos
+  for (const [key, baseAnswer] of Object.entries(knowledgeBase)) {
+    if (normalized.includes(key)) {
+      const paragraphs = generateFiveParagraphs(baseAnswer, key, input);
+      return {
+        thinking: getRandomThinking(),
+        response: paragraphs
+      };
+    }
+  }
+  
+  // 3. Si no hay match exacto, analizar pregunta y generar respuesta inteligente
+  const intelligentResponse = analyzeAndRespond(input);
+  return {
+    thinking: getRandomThinking(),
+    response: intelligentResponse
+  };
+}
+
+function generateFiveParagraphs(baseAnswer, topic, originalQuestion) {
+  const paras = [
+    `<span class="paragraph-number">1.</span> ${baseAnswer}`,
+    
+    `<span class="paragraph-number">2.</span> Profundizando más en el tema de "${topic}", es importante entender que este concepto tiene raíces profundas en la historia del pensamiento humano. Ha evolucionado significativamente a través de diferentes períodos y culturas. Su importancia radica en cómo moldea nuestra comprensión del mundo y nuestras acciones cotidianas. Muchos pensadores han dedicado sus vidas a estudiar y desarrollar teorías sobre este tema. La interdisciplinariedad es clave para una comprensión completa.`,
+    
+    `<span class="paragraph-number">3.</span> Desde una perspectiva contemporánea, "${topic}" tiene implicaciones significativas en múltiples áreas. En el mundo moderno, enfrentamos desafíos únicos relacionados con este concepto. Las tecnologías emergentes y cambios sociales están redefiniendo cómo entendemos este tema. Es crucial estar actualizado sobre los desarrollos recientes en este campo. Las personas informadas pueden tomar mejores decisiones en relación a esto.`,
+    
+    `<span class="paragraph-number">4.</span> Existen diferentes perspectivas y enfoques para entender "${topic}". No hay una única verdad absoluta, sino múltiples interpretaciones válidas. Algunos argumentan desde una perspectiva teórica, otros desde lo práctico. La evidencia empírica juega un papel importante en validar o refutar diferentes posiciones. Es importante considerar múltiples puntos de vista antes de formar una opinión sólida.`,
+    
+    `<span class="paragraph-number">5.</span> Para concluir, "${topic}" es un tema fascinante que merece reflexión continua. Entender este concepto nos ayuda a comprender mejor el mundo que nos rodea y nuestro lugar en él. La educación y el pensamiento crítico son esenciales para navegar este tema. Cada individuo puede contribuir a una mejor comprensión colectiva del tema. Te animo a seguir explorando y cuestionando ideas sobre "${topic}".`
+  ];
+  
+  return `<div class="extended-response">${paras.map((p, i) => `<div class="response-paragraph">${p}</div>`).join('')}</div>`;
+}
+
+function analyzeAndRespond(input) {
+  // Detectar tipo de pregunta
+  const isHowQuestion = input.toLowerCase().includes("cómo");
+  const isWhyQuestion = input.toLowerCase().includes("por qué");
+  const isWhatQuestion = input.toLowerCase().includes("qué");
+  const isWhoQuestion = input.toLowerCase().includes("quién");
+  
+  let topic = "este tema";
+  const words = input.split(" ");
+  if (words.length > 2) {
+    topic = words.slice(2, 5).join(" ");
+  }
+  
+  const responses = [
+    `<div class="extended-response">
+      <div class="response-paragraph"><span class="paragraph-number">1.</span> Tu pregunta sobre "${topic}" es excelente y toca un aspecto fundamental del conocimiento humano. Este tipo de indagación refleja un pensamiento crítico que es invaluable en nuestro mundo moderno. La curiosidad es el motor del aprendizaje y la comprensión. Cada pregunta que nos hacemos nos acerca a una verdad más completa. Por eso valorizo mucho tu interés en profundizar.</div>
+      <div class="response-paragraph"><span class="paragraph-number">2.</span> Para entender "${topic}" completamente, debemos considerar múltiples dimensiones. Desde la perspectiva histórica, podemos ver cómo ha evolucionado. La perspectiva científica nos ofrece datos y metodología rigurosa. La perspectiva humanística nos permite entender el significado e impacto social. Cada perspectiva contribuye piezas valiosas al rompecabezas.</div>
+      <div class="response-paragraph"><span class="paragraph-number">3.</span> En el contexto actual, "${topic}" ha adquirido nueva relevancia debido a cambios globales. La tecnología, la globalización y los movimientos sociales están transformando cómo entendemos este concepto. Las generaciones jóvenes están aportando perspectivas frescas. Es un momento emocionante para el diálogo y la innovación en este área. Estamos siendo testigos de una evolución del pensamiento.</div>
+      <div class="response-paragraph"><span class="paragraph-number">4.</span> Existen debates vibrantes entre expertos sobre "${topic}". Algunos argumentan desde principios fundamentales, otros desde resultados empíricos. Hay consenso en algunos aspectos pero desacuerdo en otros. Esto es saludable porque nos impulsa a investigar más profundamente. No debemos tener miedo de la complejidad y el desacuerdo.</div>
+      <div class="response-paragraph"><span class="paragraph-number">5.</span> Mi recomendación es que explores "${topic}" desde múltiples fuentes. Lee académicos, pero también escucha a personas con experiencia práctica. Forma tu propia opinión basada en evidencia. Recuerda que el conocimiento es un viaje, no un destino. La humildad intelectual y la apertura mental son tus mejores aliados en esta búsqueda.</div>
+    </div>`,
+    
+    `<div class="extended-response">
+      <div class="response-paragraph"><span class="paragraph-number">1.</span> La pregunta que haces sobre "${topic}" es precisamente el tipo de pregunta que ha impulsado el progreso humano. Desde los primeros filósofos hasta los científicos contemporáneos, esta línea de indagación ha sido central. Tu curiosidad refleja un espíritu inquisitivo que es raro y valioso. Profundizar en "${topic}" nos ayuda a construir una visión más sofisticada del mundo. Esto es el principio del verdadero aprendizaje.</div>
+      <div class="response-paragraph"><span class="paragraph-number">2.</span> Cuando examinamos "${topic}" históricamente, vemos patrones fascinantes. Las civilizaciones antiguas ya contemplaban aspectos de esto. Con el tiempo, la comprensión ha madurado y se ha vuelto más compleja. Revoluciones científicas y sociales han transformado cómo entendemos "${topic}". La historia nos enseña que el cambio es inevitable y frecuentemente progresivo.</div>
+      <div class="response-paragraph"><span class="paragraph-number">3.</span> Desde una perspectiva sistémica, "${topic}" está interconectado con muchos otros fenómenos. No puede estudiarse aisladamente sin perder contexto crucial. Las interdependencias son complejas y a menudo contradictorias. Los sistemas dinámicos nos muestran que pequeños cambios pueden tener grandes efectos. Debemos pensar como ecólogos mentales, viendo las conexiones.</div>
+      <div class="response-paragraph"><span class="paragraph-number">4.</span> Los expertos contemporáneos proponen diferentes marcos para entender "${topic}". Algunos usan modelos matemáticos, otros análisis cualitativo. Las escuelas de pensamiento compiten pero también se enriquecen mutuamente. La investigación empírica está constantemente refinando nuestras teorías. Es un campo vivo y dinámico donde la verdad emerge gradualmente.</div>
+      <div class="response-paragraph"><span class="paragraph-number">5.</span> Mi consejo final sobre "${topic}" es que mantengas tu mente abierta pero crítica. Busca patrones, cuestiona supuestos, valida con evidencia. Habla con personas que piensan diferente a ti. Lee autores clásicos y contemporáneos. Sobre todo, recuerda que el conocimiento es un proceso, y tu viaje de aprendizaje sobre "${topic}" está apenas comenzando. ¡Que disfrutes el camino!</div>
+    </div>`
+  ];
+  
+  return responses[Math.floor(Math.random() * responses.length)];
+}
+
+function getRandomThinking() {
+  const thinkings = [
+    "Procesando pregunta compleja... analizando múltiples perspectivas",
+    "Consultando bases de conocimiento... sintetizando información",
+    "Reflexionando sobre la pregunta... preparando respuesta comprehensiva",
+    "Organizando pensamientos... conectando conceptos",
+    "Evaluando el tema desde diferentes ángulos... armando síntesis",
+    "Profundizando en el análisis... considerando todas las dimensiones",
+    "Integrando conocimiento... preparando explicación clara"
+  ];
+  
+  return thinkings[Math.floor(Math.random() * thinkings.length)];
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  addMessage(message, true);
+  input.value = '';
+  
+  // Mostrar pensamiento
+  setTimeout(() => {
+    const data = generateIntelligentResponse(message);
+    addThinking(data.thinking);
+    
+    // Mostrar respuesta después del pensamiento
+    setTimeout(() => {
+      addMessage(data.response, false);
+    }, 2000);
+  }, 500);
+}
+
+document.getElementById('chatInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// Expandir/contraer secciones
+document.querySelectorAll('section h2').forEach(header => {
+  header.addEventListener('click', () => {
+    const section = header.closest('section');
+    section.classList.toggle('expanded');
+  });
+});
+
+// Simular métricas en tiempo real
+function updateMetrics() {
+  document.getElementById('cpu-stat').textContent = Math.floor(Math.random() * 100);
+  document.getElementById('mem-stat').textContent = Math.floor(Math.random() * 100);
+  document.getElementById('net-stat').textContent = (Math.random() * 500 + 100).toFixed(0) + ' Mbps';
+  document.getElementById('proc-stat').textContent = Math.floor(Math.random() * 2000 + 500).toLocaleString();
+  document.getElementById('users-stat').textContent = Math.floor(Math.random() * 10000 + 1000).toLocaleString();
+}
+
+setInterval(updateMetrics, 3000);
+
+// Expandir secciones automáticamente al cargar con hash
+window.addEventListener('load', () => {
+  // Inicializar conversaciones
+  initializeConversations();
+  
+  setTimeout(() => {
+    addMessage('¡Bienvenido a Aether Nexus! Soy Tyron AI. ¿Hay algo en lo que pueda ayudarte?', false);
+  }, 500);
+  
+  // Expandir sección si hay hash en la URL
+  if (window.location.hash) {
+    const targetId = window.location.hash.substring(1);
+    const section = document.getElementById(targetId);
+    if (section && section.tagName === 'SECTION') {
+      section.classList.add('expanded');
+    }
+  }
+});
+
+// Expandir sección cuando se navega a un anclaje
+window.addEventListener('hashchange', () => {
+  const targetId = window.location.hash.substring(1);
+  const section = document.getElementById(targetId);
+  if (section && section.tagName === 'SECTION') {
+    section.classList.add('expanded');
+  }
+});
+</script></div>
+
+</body>
+</html>

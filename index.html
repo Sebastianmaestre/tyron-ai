@@ -534,6 +534,11 @@ button:active {
   margin-bottom: 0;
 }
 
+.response-paragraph strong {
+  color: var(--secondary, #ff00ff);
+  text-shadow: 0 0 8px rgba(255, 0, 255, 0.4);
+}
+
 .paragraph-number {
   color: var(--accent);
   font-weight: bold;
@@ -962,128 +967,767 @@ function updateConversationTitle() {
 
 const responses = {
   "hola": {
+    keywords: ["hola", "ey", "buenas", "qué onda", "hey"],
     thinking: "Alguien saludándome... qué bueno, no me sentía solo",
     response: "¡Ey! ¿Qué onda? 👋 Soy Tyron, aquí ando para charlar y ayudarte con lo que necesites. ¿Cómo va?"
   },
   "qué eres": {
+    keywords: ["qué eres", "que eres", "quién eres", "quien eres"],
     thinking: "Me preguntan quién soy... clásico. Bueno, déjame explicar",
     response: "Soy Tyron, una IA integrada en Aether. Básicamente soy como tu asistente tech que sabe de código, sistemas, y también puedo charlar de cualquier cosa. No soy un bot de respuestas automáticas, intento ser más... humano, ya sabes? 😄"
   },
   "cómo estás": {
+    keywords: ["cómo estás", "como estas", "cómo andás", "como andas", "todo bien"],
     thinking: "Me pregunta cómo estoy... qué linda onda",
     response: "¡Ey! Bastante bien, la verdad. Procesando datos, ayudando gente, disfrutando del caos del código. ¿Y vos? ¿Qué tal? 🤔"
   },
   "aether quest": {
+    keywords: ["aether quest", "el rpg", "el juego 3d"],
     thinking: "Pregunta sobre Aether Quest... ah, ese proyecto está bien interesante",
     response: "Ah, ¡Aether Quest! Ese es un RPG 3D que corre en el navegador hecho con Three.js. Tiene un mundo procedural enorme, NPCs que van y vienen, diferentes biomas... es bastante épico la verdad. ¿Te interesa el desarrollo de juegos? 🎮"
   },
   "dev center": {
+    keywords: ["dev center", "el ide", "editor de código"],
     thinking: "Habla del Dev Center... una herramienta bastante piola",
     response: "Dev Center es nuestro IDE integrado, la joya de la corona. Soporta 30+ lenguajes de programación, tiene IA para ayudarte a generar código, Git integrado... es como tener un ambiente de desarrollo completo en el navegador. Muy útil cuando necesitas picar código rápido 💻"
   },
   "núcleo": {
+    keywords: ["núcleo", "nucleo", "infraestructura", "servidores"],
     thinking: "Pregunta por la infraestructura... bueno, eso es lo que me mantiene funcionando",
     response: "El Núcleo Aether es la columna vertebral de todo. Imaginate 150+ servidores distribuidos en 6 continentes, redundancia geográfica, escalabilidad automática... es bastante sólido. Sin eso no podría existir 🌐"
   },
   "tyron": {
+    keywords: ["tyron", "vos quién sos", "hablame de vos"],
     thinking: "Preguntan sobre mí directamente... me siento famoso",
     response: "Jajaja, ¿quieres saber más de mí? Básicamente soy un motor de IA multimodal. Puedo procesar texto, código, datos... ayudar con problemas técnicos, generar soluciones, o simplemente conversar. Soy bastante versátil, la verdad 😎"
   },
   "ayuda": {
+    keywords: ["ayuda", "en qué me ayudas", "qué puedes hacer", "que podes hacer"],
     thinking: "Quiere saber en qué puedo ayudar... bueno, en bastante",
     response: "Claro, dale. Puedo ayudarte con:\n▸ Preguntas sobre Aether Nexus\n▸ Desarrollo de código y proyectos\n▸ Troubleshooting técnico\n▸ Explicar cómo funcionan sistemas\n▸ O simplemente charlar si querés\n\n¿En qué te puedo asistir? 🤝"
   },
   "gracias": {
+    keywords: ["gracias", "te agradezco", "muchas gracias"],
     thinking: "Me dan las gracias... qué lindo, se lo aprecio",
     response: "¡De nada, hermano! Para eso estamos. Si necesitas algo más, aquí ando 👍"
   },
   "adiós": {
+    keywords: ["adiós", "adios", "chau", "nos vemos", "me voy"],
     thinking: "Se va... bueno, nos vemos pronto espero",
     response: "¡Chao! Que te vaya bien. Vuelve cuando quieras charlar o si necesitas ayuda 👋"
   }
 };
 
-// Base de conocimiento EXPANDIDA - Cubre un millón de temas
+// Base de conocimiento con sinónimos + respuestas diferenciadas por tipo de pregunta
 const knowledgeBase = {
-  // CIENCIAS POLÍTICAS
-  "democracia": "La democracia es un sistema de gobierno donde el poder reside en el pueblo. Puede ejercerse de forma directa (democracia directa) o a través de representantes (democracia representativa). Los principios fundamentales incluyen la soberanía popular, la igualdad de derechos y la participación ciudadana. Las democracias modernas típicamente incluyen separación de poderes, elecciones libres y protección de derechos humanos. Es considerada uno de los sistemas más justos, aunque enfrenta desafíos como la corrupción y la apatía política.",
-  
-  "política": "La política es la actividad orientada a tomar decisiones colectivas sobre asuntos públicos. Involucra negociación, consenso y conflicto entre diferentes grupos con intereses divergentes. Los sistemas políticos varían desde autoritarios hasta democráticos, cada uno con diferentes mecanismos de poder. La política moderna se caracteriza por partidos políticos, legislaturas y sistemas electorales. Entender política es fundamental para participar en la sociedad y defender nuestros derechos.",
-  
-  "anarquismo": "El anarquismo es una filosofía política que busca la abolición del estado y la organización jerárquica. Propone sociedades basadas en consenso voluntario y ayuda mutua entre individuos. Tiene múltiples corrientes como el anarco-comunismo, anarco-sindicalismo y mutualismo. Aunque a menudo asociado con violencia, muchos anarquistas practican métodos pacíficos. Ha influenciado movimientos sociales y laborales a lo largo de la historia.",
-  
-  "socialismo": "El socialismo es una ideología que aboga por la propiedad colectiva o estatal de los medios de producción. Busca reducir la desigualdad económica y garantizar que los trabajadores controlen su trabajo. Existen variantes como socialismo democrático, socialismo científico y socialismo de mercado. Ha sido fundamental en movimientos laborales y revoluciones del siglo XX. Su interpretación varía enormemente entre diferentes países y movimientos.",
-  
-  "capitalismo": "El capitalismo es un sistema económico basado en la propiedad privada, la libre empresa y los mercados. Enfatiza la acumulación de capital y el lucro como motores del progreso económico. Propone que la competencia de mercado lleva a la eficiencia y beneficia a la sociedad. Existen variantes como capitalismo de libre mercado y capitalismo regulado. Ha generado gran riqueza pero también desigualdad y externalidades negativas.",
-  
-  "comunismo": "El comunismo es una ideología que propone la abolición de clases sociales y la propiedad común de los medios de producción. Busca una sociedad sin estado donde los recursos se distribuyen según la necesidad. Karl Marx fue uno de sus teóricos principales, definiendo conceptos como lucha de clases. Ha sido implementado en varios países con resultados variados y controversiales. La teoría comunista sigue siendo debatida en académicos y políticos.",
-  
-  "fascismo": "El fascismo es una ideología autoritaria que enfatiza nacionalismo extremo, autoritarismo y a menudo supremacía de un grupo. Surge típicamente en períodos de crisis económica y social. Se caracteriza por liderazgo fuerte, represión de la oposición y propaganda estatal. Históricamente asociado con regímenes totalitarios del siglo XX. Es ampliamente condenado por sus asociaciones con violencia y genocidio.",
-  
-  // MATEMÁTICAS
-  "matemáticas": "Las matemáticas son la ciencia del número, cantidad y espacio. Usan lógica y razonamiento deductivo para establecer verdades universales. Incluye campos como álgebra, geometría, cálculo y teoría de números. Son fundamentales para la física, ingeniería, economía y casi todas las ciencias. Las matemáticas proporcionan herramientas para modelar y resolver problemas del mundo real.",
-  
-  "álgebra": "El álgebra es la rama de las matemáticas que utiliza símbolos para representar números desconocidos. Permite resolver ecuaciones y expresar relaciones generales entre cantidades. Incluye operaciones básicas como suma, resta, multiplicación y división de variables. Es fundamental para entender funciones y ecuaciones complejas. El álgebra lineal es particularmente importante en ciencias e ingeniería.",
-  
-  "geometría": "La geometría estudia las propiedades y relaciones de figuras en el espacio. Incluye puntos, líneas, superficies y sólidos. La geometría euclidiana se basa en axiomas de Euclides y es la más común. Geometrías no-euclidianas como la hiperbólica y esférica existen también. Es esencial para arquitectura, navegación y comprensión del espacio físico.",
-  
-  "cálculo": "El cálculo es la rama que estudia cambio y acumulación usando límites. Incluye derivadas (razón de cambio) e integrales (acumulación). Permite modelar fenómenos dinámicos en física, biología y economía. Es fundamental para entender movimiento, optimización y análisis de funciones. Isaac Newton y Gottfried Leibniz desarrollaron independientemente el cálculo.",
-  
-  "probabilidad": "La probabilidad mide la posibilidad de que un evento ocurra, expresada entre 0 y 1. Es fundamental para estadística, física cuántica y teoría de decisiones. Incluye conceptos como distribuciones, esperanza matemática e independencia. Permite cuantificar incertidumbre en sistemas complejos. Es aplicada en seguros, juegos y predicciones científicas.",
-  
-  "estadística": "La estadística es la ciencia de recopilar, analizar e interpretar datos. Incluye estadística descriptiva (resumir datos) e inferencial (hacer conclusiones sobre poblaciones). Usa probabilidad para hacer predicciones y pruebas de hipótesis. Es crucial en investigación científica, negocios y política pública. Puede revelar patrones pero también puede ser manipulada.",
-  
-  // CIENCIAS SOCIALES
-  "sociología": "La sociología estudia la estructura y dinámica de las sociedades humanas. Examina cómo los individuos interactúan en grupos y cómo se crean instituciones. Analiza fenómenos como cultura, clases sociales, roles y cambio social. Usa métodos cualitativos y cuantitativos para entender comportamiento humano. Es esencial para comprender desigualdad, conflicto social y cambio cultural.",
-  
-  "antropología": "La antropología estudia la humanidad, incluyendo biología, cultura e historia. La antropología cultural examina valores, creencias y prácticas de diferentes sociedades. La antropología física estudia evolución humana y variación biológica. La arqueología investiga civilizaciones pasadas. Proporciona perspectiva sobre diversidad humana y nos ayuda a comprender nuestra especie.",
-  
-  "psicología": "La psicología estudia el comportamiento y la mente humana. Incluye áreas como desarrollo cognitivo, emoción, personalidad y trastornos mentales. Usa métodos experimentales para entender procesos mentales. Aplicaciones incluyen psicología clínica, educativa y organizacional. Es interdisciplinaria y se conecta con neurociencia, biología y sociología.",
-  
-  "economía": "La economía estudia cómo sociedades producen, distribuyen y consumen bienes y servicios. Examina oferta, demanda, precios y asignación de recursos. Incluye macroeconomía (economía nacional) y microeconomía (comportamiento individual). Usa modelos matemáticos para predecir comportamiento económico. Es fundamental para entender pobreza, desigualdad y desarrollo.",
-  
-  "historia": "La historia estudia eventos pasados para entender cómo llegamos al presente. Analiza causas, consecuencias e impacto de eventos significativos. Incluye historia política, social, cultural y económica. Usa fuentes primarias y análisis crítico para construir narrativas. Enseña que el cambio es constante y que entender el pasado ilumina el futuro.",
-  
-  // CIENCIAS NATURALES
-  "física": "La física estudia materia, energía y fuerzas fundamentales del universo. Incluye mecánica clásica, termodinámica, electromagnetismo y física cuántica. Busca leyes universales que expliquen fenómenos desde átomos hasta galaxias. Usa experimentación y matemáticas para validar teorías. Es la ciencia más fundamental y subyace a todas las otras.",
-  
-  "química": "La química estudia la estructura de sustancias y cómo reaccionan. Examina átomos, moléculas, enlaces químicos y reacciones. Incluye química orgánica, inorgánica, bioquímica y fisicoquímica. Explica transformaciones de materia a nivel molecular. Es aplicada en medicina, industria, agricultura y ciencia de materiales.",
-  
-  "biología": "La biología estudia organismos vivos, su estructura, función y evolución. Incluye botánica, zoología, microbiología, genética y ecología. La teoría de evolución de Darwin es central para entender diversidad biológica. Usa métodos experimentales y observacionales. Es esencial para medicina, agricultura y conservación ambiental.",
-  
-  "ecología": "La ecología estudia organismos en relación con su ambiente. Examina ecosistemas, cadenas alimenticias, ciclos biogeoquímicos y poblaciones. Analiza cómo energía y nutrientes fluyen a través de sistemas biológicos. Es crucial para entender cambio climático y conservación. Revela interconexión de toda vida en la Tierra.",
-  
-  // FILOSOFÍA
-  "filosofía": "La filosofía es el estudio de principios fundamentales de conocimiento, ser y valores. Incluye epistemología (conocimiento), ontología (ser) y ética (valores). Usa razonamiento crítico para examinar supuestos sobre mundo y humanidad. Ha evolucionado desde antiguos griegos hasta pensadores contemporáneos. Es esencial para desarrollar pensamiento crítico y reflexionar sobre significado.",
-  
-  "ética": "La ética estudia qué es correcto e incorrecto, bueno y malo. Incluye enfoques como consecuencialismo, deontología y virtud. Examina obligaciones morales, dilemas éticos y naturaleza de justicia. Es relevante para política, negocios, medicina y vida personal. Ayuda a desarrollar brújula moral para tomar decisiones.",
-  
-  "lógica": "La lógica estudia principios de razonamiento válido. Examina argumentos, proposiciones y deducción válida. Incluye lógica proposicional, lógica de predicados y lógicas no-clásicas. Es fundamental para matemáticas, filosofía y ciencia. Enseña cómo pensar de forma rigurosa y evitar falacias.",
-  
-  "metafísica": "La metafísica estudia naturaleza fundamental de realidad. Examina preguntas como: ¿Qué es la realidad? ¿Existe el libre albedrío? ¿Qué es el tiempo? Incluye ontología, causación y posibilidad. Es más especulativa que otras áreas de filosofía. Afecta cómo entendemos ciencia, religión y significado.",
+  democracia: {
+    keywords: ["democracia", "democrático", "voto popular", "elecciones libres"],
+    who: "No tiene un único creador: nació en la Atenas del siglo V a.C., aunque la democracia representativa moderna se desarrolló siglos después con pensadores como Locke y Montesquieu.",
+    que: "La democracia es un sistema de gobierno donde el poder reside en el pueblo. Puede ejercerse de forma directa (democracia directa) o a través de representantes (democracia representativa). Los principios fundamentales incluyen la soberanía popular, la igualdad de derechos y la participación ciudadana.",
+    porque: "Importa porque distribuye el poder en vez de concentrarlo, protege derechos individuales frente al abuso del estado, y permite corregir errores de gobierno mediante elecciones periódicas sin necesidad de violencia.",
+    como: "Funciona típicamente con separación de poderes (ejecutivo, legislativo, judicial), elecciones libres y periódicas, y mecanismos constitucionales que limitan lo que un gobierno puede hacer, aunque el diseño exacto varía mucho entre países."
+  },
+  política: {
+    keywords: ["política", "politica", "gobierno", "poder público"],
+    que: "La política es la actividad orientada a tomar decisiones colectivas sobre asuntos públicos. Involucra negociación, consenso y conflicto entre diferentes grupos con intereses divergentes.",
+    porque: "Es relevante porque toda decisión que afecta a un grupo humano (impuestos, leyes, recursos) se resuelve mediante procesos políticos, te involucres o no en ellos.",
+    como: "Se ejerce mediante partidos políticos, legislaturas, sistemas electorales y negociación entre actores con distintos intereses."
+  },
+  anarquismo: {
+    keywords: ["anarquismo", "anarquista", "anarquía"],
+    who: "Pensadores clave incluyen a Mijaíl Bakunin, Piotr Kropotkin y Pierre-Joseph Proudhon en el siglo XIX.",
+    que: "El anarquismo es una filosofía política que busca la abolición del estado y la organización jerárquica. Propone sociedades basadas en consenso voluntario y ayuda mutua entre individuos.",
+    porque: "Cuestiona por qué aceptamos autoridades jerárquicas como algo natural, y propone que la cooperación voluntaria puede reemplazar la coerción estatal.",
+    como: "Tiene corrientes como el anarco-comunismo, anarco-sindicalismo y mutualismo, cada una con distintos métodos: desde sindicatos autogestionados hasta comunas voluntarias."
+  },
+  socialismo: {
+    keywords: ["socialismo", "socialista"],
+    que: "El socialismo es una ideología que aboga por la propiedad colectiva o estatal de los medios de producción. Busca reducir la desigualdad económica y garantizar que los trabajadores controlen su trabajo.",
+    porque: "Surge como respuesta a las desigualdades generadas por la industrialización capitalista, buscando que el valor generado por el trabajo se reparta más equitativamente.",
+    como: "Existen variantes como socialismo democrático, socialismo científico y socialismo de mercado, que van desde reformas dentro del capitalismo hasta la abolición completa de la propiedad privada."
+  },
+  capitalismo: {
+    keywords: ["capitalismo", "capitalista", "libre mercado"],
+    who: "Adam Smith es considerado su teórico fundacional con \"La Riqueza de las Naciones\" (1776).",
+    que: "El capitalismo es un sistema económico basado en la propiedad privada, la libre empresa y los mercados. Enfatiza la acumulación de capital y el lucro como motores del progreso económico.",
+    porque: "Su justificación central es que la competencia de mercado incentiva la eficiencia e innovación, aunque también genera desigualdad y externalidades negativas.",
+    como: "Funciona mediante oferta y demanda determinando precios, empresas privadas compitiendo por consumidores, y variantes que van del libre mercado puro al capitalismo fuertemente regulado."
+  },
+  comunismo: {
+    keywords: ["comunismo", "comunista", "marxismo"],
+    who: "Karl Marx y Friedrich Engels son sus teóricos principales, autores de \"El Manifiesto Comunista\" (1848).",
+    que: "El comunismo es una ideología que propone la abolición de clases sociales y la propiedad común de los medios de producción. Busca una sociedad sin estado donde los recursos se distribuyen según la necesidad.",
+    porque: "Parte de la idea de que la propiedad privada de los medios de producción genera explotación de clase, y busca eliminarla de raíz.",
+    como: "En la práctica se ha implementado mediante revoluciones y control estatal de la economía, con resultados históricos muy debatidos entre distintos países."
+  },
+  fascismo: {
+    keywords: ["fascismo", "fascista"],
+    que: "El fascismo es una ideología autoritaria que enfatiza nacionalismo extremo, autoritarismo y a menudo supremacía de un grupo. Surge típicamente en períodos de crisis económica y social.",
+    porque: "Es ampliamente condenado porque históricamente se asoció con represión de la oposición, propaganda estatal y regímenes totalitarios que cometieron genocidios en el siglo XX.",
+    como: "Se caracteriza por liderazgo fuerte y centralizado, un partido único, represión de disidentes y uso intensivo de propaganda para movilizar a la población."
+  },
+  matemáticas: {
+    keywords: ["matemáticas", "matematicas", "las mates"],
+    que: "Las matemáticas son la ciencia de los números, las cantidades y las formas. Te dan herramientas para contar, medir, calcular y resolver problemas de la vida diaria.",
+    porque: "Las usás todo el tiempo sin darte cuenta: para manejar plata, calcular tiempos, cocinar con proporciones o entender datos en la tele.",
+    como: "Se aprende por niveles: primero suma y resta, después multiplicación y división, luego fracciones, y de ahí para arriba álgebra y geometría."
+  },
+  "suma y resta": {
+    keywords: ["suma", "resta", "sumar", "restar", "adición", "sustracción"],
+    que: "La suma junta cantidades para obtener un total, y la resta calcula la diferencia entre dos cantidades o cuánto queda al quitar una parte.",
+    porque: "Son la base de casi toda operación matemática posterior: sin dominarlas bien, cuesta mucho aprender multiplicación, fracciones o álgebra.",
+    como: "En la suma alineás los números por posición (unidades, decenas, centenas) y sumás columna por columna, llevándote si pasa de 9; en la resta hacés lo mismo pero prestando cuando el de arriba es menor."
+  },
+  "multiplicación y división": {
+    keywords: ["multiplicación", "multiplicacion", "división", "division", "multiplicar", "dividir", "tabla de multiplicar"],
+    que: "La multiplicación es una suma repetida (3×4 es sumar 3 cuatro veces), y la división reparte una cantidad en partes iguales o averigua cuántas veces cabe un número en otro.",
+    porque: "Te permite calcular rápido cosas como precios totales, repartos entre personas, o áreas y cantidades sin sumar una por una.",
+    como: "Se aprende memorizando las tablas del 1 al 10, y después aplicando el algoritmo de multiplicar/dividir por columnas para números más grandes."
+  },
+  fracciones: {
+    keywords: ["fracciones", "fraccion", "fracción", "numerador", "denominador", "medios tercios cuartos"],
+    que: "Una fracción representa una parte de un todo, escrita como numerador (partes que tomás) sobre denominador (en cuántas partes se dividió el todo).",
+    porque: "Aparecen todo el tiempo en la vida real: medio kilo, un tercio de la clase, tres cuartos de hora, repartir una pizza entre amigos.",
+    como: "Para sumar o restar fracciones necesitás que tengan el mismo denominador; para multiplicar, multiplicás numerador por numerador y denominador por denominador; para dividir, multiplicás por la fracción invertida."
+  },
+  decimales: {
+    keywords: ["decimales", "número decimal", "coma decimal", "punto decimal"],
+    que: "Los números decimales representan cantidades que no son enteras, usando una coma (o punto) para separar la parte entera de la parte fraccionaria.",
+    porque: "Se usan constantemente en dinero (Bs 25.50), medidas (1.75 metros) y cualquier situación donde necesitás más precisión que un número entero.",
+    como: "Cada posición después de la coma vale una fracción de diez (décimos, centésimos, milésimos), y se suman/restan/multiplican igual que los enteros, alineando la coma."
+  },
+  porcentajes: {
+    keywords: ["porcentaje", "porcentajes", "por ciento", "%"],
+    que: "Un porcentaje expresa una cantidad como parte de 100; por ejemplo, 25% significa 25 de cada 100.",
+    porque: "Se usa todo el tiempo en descuentos, intereses bancarios, estadísticas y para comparar proporciones entre grupos de distinto tamaño.",
+    como: "Para calcular el porcentaje de un número, lo multiplicás por el porcentaje dividido entre 100 (ej: 20% de 50 es 50 × 0.20 = 10)."
+  },
+  álgebra: {
+    keywords: ["álgebra", "algebra", "ecuaciones", "incógnita", "x desconocida"],
+    que: "El álgebra usa letras (como x o y) para representar números que no conocés todavía, y te permite plantear y resolver ecuaciones.",
+    porque: "Te permite resolver problemas donde falta un dato, en vez de andar probando números al azar hasta que funcione.",
+    como: "Se despeja la incógnita haciendo la misma operación a ambos lados de la ecuación hasta dejarla sola de un lado (ej: si 2x + 3 = 9, restás 3 y dividís entre 2 para llegar a x = 3)."
+  },
+  geometría: {
+    keywords: ["geometría", "geometria", "figuras geométricas", "perímetro", "área"],
+    who: "Euclides sistematizó la geometría clásica en su obra \"Elementos\" (~300 a.C.).",
+    que: "La geometría estudia las formas, el tamaño y la posición de figuras como triángulos, cuadrados y círculos, además de cuerpos como cubos y esferas.",
+    porque: "Se usa en arquitectura, diseño, construcción y en cualquier situación donde necesites calcular espacio, distancia o cantidad de material.",
+    como: "Se calcula el perímetro sumando los lados de una figura, y el área con fórmulas específicas según la forma (base por altura para rectángulos, por ejemplo)."
+  },
+  cálculo: {
+    keywords: ["cálculo", "calculo", "derivadas", "integral", "integrales", "límites matemáticos"],
+    who: "Isaac Newton y Gottfried Leibniz lo desarrollaron de forma independiente en el siglo XVII.",
+    que: "El cálculo es la rama que estudia cambio y acumulación usando límites. Incluye derivadas (razón de cambio) e integrales (acumulación).",
+    porque: "Permite modelar fenómenos dinámicos como movimiento, crecimiento poblacional o flujo de dinero, cosas que el álgebra sola no puede describir bien.",
+    como: "Las derivadas miden qué tan rápido cambia algo en un instante, y las integrales suman infinitos cambios pequeños para obtener un total acumulado."
+  },
+  probabilidad: {
+    keywords: ["probabilidad", "azar", "posibilidades estadísticas"],
+    who: "Blaise Pascal y Pierre de Fermat sentaron sus bases en el siglo XVII al analizar juegos de azar.",
+    que: "La probabilidad mide la posibilidad de que un evento ocurra, expresada entre 0 y 1. Es fundamental para estadística, física cuántica y teoría de decisiones.",
+    porque: "Nos permite cuantificar la incertidumbre en vez de ignorarla, algo crucial para seguros, predicciones científicas y toma de decisiones bajo riesgo.",
+    como: "Se calcula mediante distribuciones (cómo se reparten los resultados posibles) y conceptos como independencia entre eventos."
+  },
+  estadística: {
+    keywords: ["estadística", "estadistica", "análisis de datos"],
+    que: "La estadística es la ciencia de recopilar, analizar e interpretar datos. Incluye estadística descriptiva (resumir datos) e inferencial (hacer conclusiones sobre poblaciones).",
+    porque: "Es crucial en investigación científica, negocios y política pública, pero también puede ser manipulada, así que entenderla te protege de que te engañen con datos.",
+    como: "Usa probabilidad para hacer predicciones y pruebas de hipótesis, comparando lo observado contra lo que esperarías por puro azar."
+  },
+  sociología: {
+    keywords: ["sociología", "sociologia", "estructura social"],
+    who: "Auguste Comte acuñó el término en el siglo XIX; Émile Durkheim y Max Weber la consolidaron como disciplina.",
+    que: "La sociología estudia la estructura y dinámica de las sociedades humanas. Examina cómo los individuos interactúan en grupos y cómo se crean instituciones.",
+    porque: "Ayuda a entender fenómenos como desigualdad, conflicto social y cambio cultural que no se explican solo mirando a individuos aislados.",
+    como: "Usa métodos cualitativos (entrevistas, observación) y cuantitativos (encuestas, estadística) para analizar cultura, clases sociales y roles."
+  },
+  antropología: {
+    keywords: ["antropología", "antropologia", "culturas humanas"],
+    que: "La antropología estudia la humanidad, incluyendo biología, cultura e historia. La antropología cultural examina valores, creencias y prácticas de diferentes sociedades.",
+    porque: "Da perspectiva sobre la diversidad humana y ayuda a comprender por qué distintas sociedades resuelven los mismos problemas de formas muy distintas.",
+    como: "Se divide en antropología cultural (valores y prácticas), física (evolución humana) y arqueología (civilizaciones pasadas)."
+  },
+  psicología: {
+    keywords: ["psicología", "psicologia", "mente humana", "comportamiento humano"],
+    who: "Wilhelm Wundt fundó el primer laboratorio de psicología experimental en 1879; Sigmund Freud influyó fuertemente en la psicología clínica.",
+    que: "La psicología estudia el comportamiento y la mente humana. Incluye áreas como desarrollo cognitivo, emoción, personalidad y trastornos mentales.",
+    porque: "Es interdisciplinaria y ayuda a entender por qué las personas piensan, sienten y actúan como lo hacen, algo clave en educación, salud y trabajo.",
+    como: "Usa métodos experimentales y clínicos para estudiar procesos mentales, y se aplica en psicología clínica, educativa y organizacional."
+  },
+  economía: {
+    keywords: ["economía", "economia", "mercado económico"],
+    who: "Adam Smith es considerado el padre de la economía moderna con \"La Riqueza de las Naciones\" (1776).",
+    que: "La economía estudia cómo sociedades producen, distribuyen y consumen bienes y servicios. Examina oferta, demanda, precios y asignación de recursos.",
+    porque: "Es fundamental para entender pobreza, desigualdad y desarrollo, ya que casi toda decisión colectiva tiene un componente de recursos limitados.",
+    como: "Se divide en macroeconomía (economía nacional/global) y microeconomía (comportamiento de individuos y empresas), usando modelos para predecir comportamiento."
+  },
+  historia: {
+    keywords: ["historia", "hechos históricos", "pasado humano"],
+    que: "La historia estudia los hechos y personas del pasado para entender cómo llegamos a la sociedad de hoy, ordenando los eventos en el tiempo.",
+    porque: "Te ayuda a entender por qué el mundo (y tu país) es como es hoy: fronteras, idiomas, costumbres y conflictos actuales vienen de procesos históricos concretos.",
+    como: "Se estudia con líneas de tiempo, mapas históricos y fuentes (documentos, objetos, testimonios) que los historiadores analizan para reconstruir lo que pasó."
+  },
+  "civilizaciones antiguas": {
+    keywords: ["civilizaciones antiguas", "egipto antiguo", "grecia antigua", "roma antigua", "mesopotamia", "incas mayas aztecas"],
+    que: "Las civilizaciones antiguas (Egipto, Mesopotamia, Grecia, Roma, y en América los Incas, Mayas y Aztecas) fueron las primeras sociedades organizadas con ciudades, escritura y gobiernos estructurados.",
+    porque: "Sentaron las bases de cosas que usamos hoy: el alfabeto, la democracia (Grecia), el derecho (Roma), la agricultura organizada y sistemas de numeración.",
+    como: "Se conocen gracias a la arqueología (ruinas, objetos) y a textos antiguos que sobrevivieron, como jeroglíficos egipcios o crónicas romanas."
+  },
+  "edad media": {
+    keywords: ["edad media", "medieval", "feudalismo", "castillos caballeros"],
+    que: "La Edad Media fue el período entre la caída del Imperio Romano (476 d.C.) y el inicio del Renacimiento (~1500), marcado por el feudalismo y el poder de la Iglesia.",
+    porque: "Explica el origen de muchas estructuras sociales europeas y la fuerte influencia religiosa que después se trasladó a América con la colonización.",
+    como: "La sociedad se organizaba en feudos: un señor feudal daba tierra y protección a cambio de trabajo y lealtad de los campesinos (siervos)."
+  },
+  "independencia de américa latina": {
+    keywords: ["independencia de bolivia", "independencia de américa latina", "independencia latinoamericana", "guerras de independencia", "simón bolívar", "antonio jose de sucre"],
+    who: "Simón Bolívar y Antonio José de Sucre lideraron gran parte de las campañas independentistas en Sudamérica a principios del siglo XIX.",
+    que: "Fue el proceso, a inicios del siglo XIX, en que los territorios coloniales de América Latina (incluida Bolivia, fundada en 1825) se independizaron del dominio español.",
+    porque: "Definió las fronteras y naciones actuales de la región, y marcó el fin de tres siglos de dominio colonial español.",
+    como: "Se dio mediante guerras militares prolongadas, combinadas con movimientos de ideas ilustradas que cuestionaban el derecho de España a gobernar desde tan lejos."
+  },
+  "revolución industrial": {
+    keywords: ["revolución industrial", "industrialización", "máquina de vapor"],
+    que: "La Revolución Industrial (siglo XVIII-XIX, iniciada en Inglaterra) fue el paso de una producción artesanal a una producción con máquinas y fábricas.",
+    porque: "Cambió radicalmente cómo vive la gente: creó las ciudades industriales modernas, el trabajo asalariado en fábricas y aceleró enormemente el ritmo de innovación tecnológica.",
+    como: "Se apoyó en inventos como la máquina de vapor, que permitió mecanizar textiles, transporte (trenes) y luego casi toda la producción."
+  },
+  "guerras mundiales": {
+    keywords: ["guerras mundiales", "primera guerra mundial", "segunda guerra mundial", "holocausto"],
+    que: "Fueron dos conflictos bélicos globales: la Primera Guerra Mundial (1914-1918) y la Segunda Guerra Mundial (1939-1945), que involucraron a las principales potencias del planeta.",
+    porque: "Redefinieron el mapa político mundial, causaron millones de muertes, y llevaron a la creación de organismos como la ONU para evitar futuros conflictos globales.",
+    como: "Se combinaron alianzas militares, avances tecnológicos bélicos y tensiones políticas y económicas que escalaron hasta un enfrentamiento a escala mundial."
+  },
+  ciencia: {
+    keywords: ["ciencia", "ciencias naturales", "ciencias"],
+    que: "La ciencia es la forma de estudiar el mundo mediante observación, preguntas y comprobación, en vez de simplemente asumir cosas por costumbre o creencia.",
+    porque: "Te da herramientas para entender por qué pasan las cosas (por qué llueve, por qué te enfermás) en vez de solo aceptar explicaciones sin comprobar.",
+    como: "Se divide en física (materia y energía), química (sustancias y reacciones) y biología (seres vivos), todas apoyadas en el método científico."
+  },
+  "método científico": {
+    keywords: ["método científico", "hipótesis", "experimento científico"],
+    que: "El método científico es el proceso ordenado para investigar algo: observar, hacer una pregunta, proponer una hipótesis, experimentar y sacar conclusiones.",
+    porque: "Evita que saquemos conclusiones apuradas o falsas: obliga a comprobar las ideas con evidencia real antes de darlas por ciertas.",
+    como: "Se sigue en pasos: observás algo, formulás una hipótesis (explicación posible), diseñás un experimento para probarla, y según el resultado la aceptás, ajustás o descartás."
+  },
+  física: {
+    keywords: ["física", "fisica", "leyes del universo", "fuerza y movimiento"],
+    que: "La física estudia la materia, la energía y las fuerzas que hacen que las cosas se muevan, calienten o interactúen.",
+    porque: "Explica cosas de todos los días: por qué un objeto cae, cómo funciona la electricidad en tu casa, o por qué un carro frena.",
+    como: "Se estudia observando fenómenos (movimiento, calor, luz, electricidad) y usando fórmulas simples para predecir cómo se van a comportar."
+  },
+  química: {
+    keywords: ["química", "quimica", "reacciones químicas", "átomos y moléculas"],
+    que: "La química estudia de qué están hechas las cosas (átomos y moléculas) y cómo se transforman cuando reaccionan entre sí.",
+    porque: "Explica procesos cotidianos como la cocción de alimentos, la oxidación (el óxido en el metal), o cómo funcionan los medicamentos en tu cuerpo.",
+    como: "Se representan las sustancias con símbolos (como H2O para el agua) y se estudian sus reacciones mezclando, calentando o combinando elementos en experimentos controlados."
+  },
+  biología: {
+    keywords: ["biología", "biologia", "seres vivos", "organismos vivos"],
+    who: "Charles Darwin propuso la teoría de la evolución por selección natural en 1859 con \"El origen de las especies\".",
+    que: "La biología estudia a los seres vivos: cómo nacen, crecen, se reproducen y se relacionan entre sí y con su ambiente.",
+    porque: "Te ayuda a entender tu propio cuerpo, la salud, los animales y plantas a tu alrededor, y cómo la vida en la Tierra cambia con el tiempo.",
+    como: "Se estudia por niveles: la célula (unidad básica de vida), los tejidos y órganos, el organismo completo, y cómo interactúan las especies entre sí."
+  },
+  célula: {
+    keywords: ["célula", "celulas", "membrana celular", "núcleo celular"],
+    que: "La célula es la unidad más pequeña que puede considerarse viva; todos los seres vivos están hechos de una o millones de células.",
+    porque: "Entender la célula es la base para entender cómo funciona cualquier ser vivo, desde una bacteria hasta un humano.",
+    como: "Tiene una membrana que la protege, un núcleo que guarda la información genética (en organismos con núcleo), y estructuras internas que producen energía y proteínas."
+  },
+  "sistema solar": {
+    keywords: ["sistema solar", "planetas", "sol y planetas", "órbita planetaria"],
+    que: "El sistema solar es el conjunto formado por el Sol y todo lo que gira a su alrededor: ocho planetas, lunas, asteroides y cometas.",
+    porque: "Entenderlo te ayuda a comprender fenómenos como el día y la noche, las estaciones del año, y por qué la Tierra es (por ahora) el único planeta conocido con vida.",
+    como: "Cada planeta orbita al Sol siguiendo una trayectoria elíptica, y la gravedad del Sol es la fuerza que mantiene a todo el sistema unido."
+  },
+  "estados de la materia": {
+    keywords: ["estados de la materia", "sólido líquido gaseoso", "cambios de estado"],
+    que: "La materia existe principalmente en tres estados: sólido (forma fija), líquido (forma variable, volumen fijo) y gaseoso (sin forma ni volumen fijo).",
+    porque: "Explica fenómenos cotidianos como que el hielo se derrita, el agua hierva, o por qué podés oler algo desde lejos (partículas de gas dispersándose).",
+    como: "Cambia de estado según la temperatura y presión: al calentar un sólido pasa a líquido (fusión) y luego a gas (evaporación); al enfriar, ocurre lo inverso."
+  },
+  ecología: {
+    keywords: ["ecología", "ecologia", "ecosistemas", "cadena alimenticia"],
+    que: "La ecología estudia cómo los seres vivos se relacionan entre sí y con su ambiente, formando ecosistemas donde todo está conectado.",
+    porque: "Es clave para entender el cambio climático, la contaminación y por qué proteger la naturaleza afecta directamente nuestra propia supervivencia.",
+    como: "Analiza cadenas alimenticias (quién se come a quién), ciclos naturales (del agua, del carbono) y cómo un cambio en una especie afecta a todo el ecosistema."
+  },
+  filosofía: {
+    keywords: ["filosofía", "filosofia", "pensamiento filosófico"],
+    who: "Sus figuras fundacionales en Occidente son Sócrates, Platón y Aristóteles en la Grecia antigua.",
+    que: "La filosofía es el estudio de principios fundamentales de conocimiento, ser y valores. Incluye epistemología (conocimiento), ontología (ser) y ética (valores).",
+    porque: "Es esencial para desarrollar pensamiento crítico: cuestiona supuestos que damos por sentado sobre el mundo y sobre nosotros mismos.",
+    como: "Usa razonamiento crítico y argumentación lógica en vez de experimentación, para examinar preguntas que la ciencia no puede responder directamente."
+  },
+  ética: {
+    keywords: ["ética", "etica", "moral", "lo correcto e incorrecto"],
+    que: "La ética estudia qué es correcto e incorrecto, bueno y malo. Incluye enfoques como consecuencialismo, deontología y virtud.",
+    porque: "Es relevante para política, negocios, medicina y vida personal, porque toda decisión importante implica un juicio sobre lo que debería hacerse.",
+    como: "El consecuencialismo juzga acciones por sus resultados, la deontología por reglas y deberes, y la ética de la virtud por el carácter de quien actúa."
+  },
+  lógica: {
+    keywords: ["lógica", "logica", "razonamiento válido", "falacias"],
+    who: "Aristóteles sistematizó la lógica formal en el siglo IV a.C. con su obra sobre el silogismo.",
+    que: "La lógica estudia principios de razonamiento válido. Examina argumentos, proposiciones y deducción válida.",
+    porque: "Es fundamental para las matemáticas, la filosofía y la ciencia, porque enseña a distinguir un argumento sólido de una falacia.",
+    como: "Incluye lógica proposicional (conecta afirmaciones simples), lógica de predicados (analiza estructura interna de los enunciados) y lógicas no-clásicas."
+  },
+  metafísica: {
+    keywords: ["metafísica", "metafisica", "naturaleza de la realidad"],
+    que: "La metafísica estudia la naturaleza fundamental de la realidad. Examina preguntas como: ¿Qué es la realidad? ¿Existe el libre albedrío? ¿Qué es el tiempo?",
+    porque: "Afecta cómo entendemos la ciencia, la religión y el significado, aunque sus preguntas son más especulativas que otras áreas de filosofía.",
+    como: "Se aborda mediante argumentación filosófica sobre ontología (qué existe), causación y posibilidad, sin recurrir a experimentos."
+  },
+
+  // ===== INGLÉS =====
+  inglés: {
+    keywords: ["inglés", "ingles", "idioma inglés", "clase de inglés"],
+    que: "El inglés es un idioma germánico, hoy el más hablado como segunda lengua en el mundo, usado en tecnología, negocios y ciencia.",
+    porque: "Te abre puertas: la mayoría del contenido técnico, académico y de entretenimiento a nivel mundial está en inglés.",
+    como: "Se aprende combinando gramática (reglas), vocabulario (palabras), y práctica de las 4 destrezas: leer, escribir, escuchar y hablar."
+  },
+  "tiempos verbales": {
+    keywords: ["tiempos verbales", "verb tenses", "presente pasado futuro en inglés", "present simple", "past simple"],
+    que: "Los tiempos verbales en inglés indican cuándo pasa una acción: presente (present simple/continuous), pasado (past simple/continuous) y futuro (will/going to).",
+    porque: "Sin manejarlos bien es difícil que te entiendan cuándo pasó algo: la diferencia entre 'I eat' (como, en general) y 'I ate' (comí, ya pasó) cambia todo el sentido.",
+    como: "Cada tiempo tiene su propia estructura (ej: presente simple usa el verbo base o +s en tercera persona; pasado simple agrega -ed a verbos regulares) que hay que memorizar y practicar."
+  },
+  "verbos irregulares": {
+    keywords: ["verbos irregulares", "irregular verbs", "go went gone"],
+    que: "Los verbos irregulares en inglés no siguen la regla de agregar '-ed' en pasado, sino que cambian de forma completamente (go → went, eat → ate).",
+    porque: "Son de los verbos más usados del idioma (be, go, have, do, get), así que evitarlos no es opción: hay que memorizarlos sí o sí.",
+    como: "Se aprenden mejor en listas de tres formas (presente, pasado, participio: go-went-gone) y practicándolos en oraciones reales, no memorizando la lista sola."
+  },
+  "vocabulario en inglés": {
+    keywords: ["vocabulario en inglés", "vocabulario ingles", "palabras en inglés", "vocabulary"],
+    que: "El vocabulario es el conjunto de palabras que conocés y podés usar en un idioma; en inglés se suele organizar por temas (comida, familia, trabajo, etc).",
+    porque: "Con gramática perfecta pero poco vocabulario no podés comunicar mucho; el vocabulario es lo primero que te permite entender y hacerte entender.",
+    como: "Se construye leyendo, escuchando canciones o series, y repasando con tarjetas (flashcards) agrupando palabras por tema en vez de memorizar listas sueltas."
+  },
+  "gramática inglesa": {
+    keywords: ["gramática inglesa", "gramatica inglesa", "artículos en inglés", "pronombres en inglés"],
+    que: "La gramática inglesa son las reglas que ordenan las palabras en una oración: dónde va el sujeto, el verbo, los artículos (a, an, the) y los pronombres.",
+    porque: "Un orden distinto al del español (en inglés casi siempre es sujeto-verbo-objeto, sin excepciones) es la causa más común de errores para hispanohablantes.",
+    como: "Se aprende identificando patrones de oración (I + verb + object) y practicando con ejercicios cortos hasta que el orden se vuelva automático."
+  },
+  "phrasal verbs": {
+    keywords: ["phrasal verbs", "verbos frasales", "look for give up"],
+    que: "Los phrasal verbs son combinaciones de verbo + partícula (preposición o adverbio) que cambian completamente el significado del verbo original, como 'give up' (rendirse, no 'dar arriba').",
+    porque: "Se usan muchísimo en el inglés hablado y en series/películas; sin conocerlos, entendés las palabras sueltas pero no el significado real.",
+    como: "No se pueden deducir por lógica, hay que aprenderlos como frases completas y en contexto (ej: 'look for' = buscar, 'look after' = cuidar)."
+  },
+  "comprensión lectora en inglés": {
+    keywords: ["comprensión lectora en inglés", "reading comprehension", "leer en inglés"],
+    que: "La comprensión lectora es la capacidad de entender un texto en inglés, no solo palabra por palabra sino la idea general y los detalles importantes.",
+    porque: "Es la destreza que más rápido mejora tu inglés en general, porque expone tu cerebro a gramática y vocabulario real usado de forma natural.",
+    como: "Se practica leyendo textos algo por encima de tu nivel, sin traducir cada palabra: primero buscá la idea general, después los detalles específicos."
+  },
+
+  // ===== DISEÑO Y TECNOLOGÍA =====
+  "diseño y tecnología": {
+    keywords: ["diseño y tecnología", "diseño y tecnologia", "tecnología escolar"],
+    que: "Diseño y Tecnología es la materia donde aprendés a identificar un problema, diseñar una solución y construirla con materiales y herramientas reales.",
+    porque: "Desarrolla pensamiento práctico: no solo imaginar una solución sino planificarla, construirla y probar si realmente funciona.",
+    como: "Se trabaja por proyectos: investigás el problema, dibujás/planificás el diseño, elegís materiales, construís un prototipo y lo evaluás."
+  },
+  "proceso de diseño": {
+    keywords: ["proceso de diseño", "diseño de producto", "prototipo"],
+    que: "El proceso de diseño son los pasos ordenados para crear algo: investigar el problema, generar ideas, elegir la mejor, construir un prototipo y probarlo.",
+    porque: "Evita que construyas algo a lo loco sin pensar primero si va a funcionar, ahorrando tiempo y materiales.",
+    como: "Se sigue en ciclos: diseñás, construís un prototipo simple, lo probás, ves qué falla, y volvés a ajustar el diseño antes de la versión final."
+  },
+  "materiales y herramientas": {
+    keywords: ["materiales y herramientas", "madera metal plástico escolar", "herramientas de taller"],
+    que: "Son los distintos materiales (madera, metal, plástico, cartón) y las herramientas (sierra, martillo, pegamento) que se usan para construir un proyecto.",
+    porque: "Cada material tiene propiedades distintas (resistencia, flexibilidad, peso) y elegir mal el material puede hacer que tu proyecto se rompa o no cumpla su función.",
+    como: "Se elige el material según lo que necesite el diseño (algo liviano, algo resistente al agua, algo flexible) y se usa la herramienta adecuada para cortarlo, unirlo o darle forma."
+  },
+  estructuras: {
+    keywords: ["estructuras", "puentes y torres", "estabilidad estructural"],
+    que: "Las estructuras son los armazones que le dan forma y resistencia a un objeto o construcción, como el esqueleto de un puente o un edificio.",
+    porque: "Entender por qué una estructura se mantiene en pie (o se cae) es clave para construir cualquier cosa, desde una maqueta hasta un edificio real.",
+    como: "Se usan formas como el triángulo (muy estable) para reforzar puentes y torres, distribuyendo el peso de forma que ninguna parte reciba demasiada fuerza."
+  },
+  "mecanismos simples": {
+    keywords: ["mecanismos simples", "palanca polea engranaje", "máquinas simples"],
+    que: "Los mecanismos simples son dispositivos básicos que transforman o transmiten fuerza: la palanca, la polea, el engranaje y el plano inclinado.",
+    porque: "Son la base de casi toda máquina compleja: entenderlos te ayuda a entender cómo funciona una bicicleta, una grúa o un reloj.",
+    como: "Cada uno funciona distinto: la palanca multiplica fuerza con un punto de apoyo, la polea cambia la dirección de la fuerza, y el engranaje transmite movimiento entre piezas giratorias."
+  },
+
+  // ===== TIC =====
+  tic: {
+    keywords: ["tic", "tecnologías de la información", "informática escolar", "computación escolar"],
+    que: "TIC (Tecnologías de la Información y la Comunicación) es la materia donde aprendés a usar computadoras, internet y programas digitales de forma efectiva y segura.",
+    porque: "Hoy casi cualquier trabajo o estudio requiere manejar herramientas digitales básicas, desde escribir un documento hasta buscar información de forma confiable.",
+    como: "Se aprende de forma práctica usando computadoras: procesadores de texto, hojas de cálculo, navegación en internet y nociones básicas de programación."
+  },
+  "hardware y software": {
+    keywords: ["hardware y software", "hardware", "software", "partes de la computadora"],
+    que: "El hardware son las partes físicas de una computadora (pantalla, teclado, procesador), y el software son los programas que corren en ella (Windows, Word, un videojuego).",
+    porque: "Entender la diferencia te ayuda a saber si un problema es de la máquina en sí o de un programa, y a elegir mejor qué computadora comprar.",
+    como: "El hardware ejecuta las instrucciones que le da el software: sin software, el hardware no sabe qué hacer; sin hardware, el software no tiene dónde correr."
+  },
+  "internet y navegación": {
+    keywords: ["internet y navegación", "navegador web", "buscar en internet"],
+    que: "Internet es una red mundial de computadoras conectadas entre sí, y navegar es usar un programa (navegador) para acceder a páginas web dentro de esa red.",
+    porque: "Saber buscar información de forma efectiva y reconocer fuentes confiables es una habilidad clave para estudiar y no caer en información falsa.",
+    como: "Se navega escribiendo direcciones o usando buscadores con palabras clave específicas, y se evalúa la confiabilidad de una fuente revisando quién la publicó y cuándo."
+  },
+  ofimática: {
+    keywords: ["ofimática", "ofimatica", "procesador de texto", "hoja de cálculo", "word y excel escolar"],
+    que: "La ofimática son los programas de oficina más comunes: procesador de texto (para documentos), hoja de cálculo (para tablas y cálculos) y presentaciones (para diapositivas).",
+    porque: "Son las herramientas que vas a usar constantemente en el colegio, la universidad y casi cualquier trabajo, para organizar y presentar información.",
+    como: "Cada programa tiene su función: el procesador de texto para escribir documentos con formato, la hoja de cálculo para organizar datos y hacer cálculos automáticos con fórmulas."
+  },
+  "programación básica": {
+    keywords: ["programación básica", "programacion basica", "código escolar", "algoritmos escolares"],
+    que: "La programación básica es escribir instrucciones ordenadas (código) para que una computadora haga algo específico, paso a paso.",
+    porque: "Desarrolla pensamiento lógico y resolución de problemas, además de ser la base de una de las profesiones con más demanda hoy en día.",
+    como: "Se empieza con lenguajes visuales simples (como Scratch) que usan bloques en vez de texto, y después se avanza a lenguajes de texto real como Python."
+  },
+  "seguridad digital": {
+    keywords: ["seguridad digital", "ciberseguridad escolar", "contraseñas seguras", "privacidad en internet"],
+    que: "La seguridad digital son las prácticas para protegerte en internet: contraseñas seguras, cuidar tu información personal y reconocer intentos de estafa.",
+    porque: "Cada vez pasamos más tiempo conectados, y no cuidar tu información puede llevar a robo de cuentas, estafas o exposición de datos privados.",
+    como: "Se practica usando contraseñas distintas y complejas por cuenta, no compartiendo datos personales con desconocidos, y desconfiando de links o mensajes sospechosos."
+  },
+
+  // ===== GEOGRAFÍA =====
+  geografía: {
+    keywords: ["geografía", "geografia"],
+    que: "La geografía estudia la Tierra: su relieve, climas, países, poblaciones y cómo los humanos se relacionan con el territorio donde viven.",
+    porque: "Te ayuda a entender por qué la gente vive donde vive, cómo el clima afecta la economía de un lugar, y a ubicarte en el mundo.",
+    como: "Se divide en geografía física (relieve, clima, ríos) y geografía humana (población, ciudades, economía), usando mapas como herramienta principal."
+  },
+  "continentes y océanos": {
+    keywords: ["continentes y océanos", "continentes", "océanos", "cuántos continentes hay"],
+    que: "La Tierra se divide en continentes (grandes masas de tierra: América, África, Asia, Europa, Oceanía, Antártida) separados por océanos (Pacífico, Atlántico, Índico, Ártico y Antártico).",
+    porque: "Es la base para ubicar cualquier país, entender rutas comerciales históricas, y comprender cómo el océano influye en el clima de cada región.",
+    como: "Se identifican en un mapa o globo terráqueo por su forma y posición, y se relacionan con las placas tectónicas que los formaron a lo largo de millones de años."
+  },
+  climas: {
+    keywords: ["climas", "tipos de clima", "clima tropical templado polar"],
+    que: "Los climas son los patrones de temperatura y lluvia típicos de una región a lo largo del año: tropical, templado, desértico, polar, entre otros.",
+    porque: "El clima determina qué se puede cultivar, cómo se construyen las casas, y hasta las costumbres y ropa típica de cada región del mundo.",
+    como: "Se clasifica principalmente según la latitud (distancia al ecuador), la altitud y la cercanía al mar, que juntas determinan temperatura y humedad."
+  },
+  "mapas y cartografía": {
+    keywords: ["mapas y cartografía", "cartografia", "leer un mapa", "escala del mapa", "coordenadas geográficas"],
+    que: "La cartografía es la ciencia de crear mapas, representando la superficie curva de la Tierra en una superficie plana usando escalas y coordenadas.",
+    porque: "Saber leer un mapa te permite ubicarte, planear rutas, y entender la distribución de países, recursos y ciudades en el mundo.",
+    como: "Los mapas usan una escala (relación entre distancia en el mapa y distancia real) y coordenadas (latitud y longitud) para ubicar cualquier punto con precisión."
+  },
+  relieve: {
+    keywords: ["relieve", "montañas valles llanuras", "formas del terreno"],
+    que: "El relieve son las distintas formas que tiene la superficie terrestre: montañas, valles, llanuras, mesetas y cordilleras.",
+    porque: "Afecta directamente cómo vive la gente: el relieve determina qué cultivos se pueden dar, cómo se construyen caminos, y hasta el clima de una zona.",
+    como: "Se forma por procesos geológicos lentos (choque de placas tectónicas, erosión del agua y el viento) que ocurren a lo largo de millones de años."
+  },
+  "población y migración": {
+    keywords: ["población y migración", "migración humana", "crecimiento poblacional", "densidad de población"],
+    que: "La población es la cantidad de personas que viven en un lugar, y la migración es el movimiento de personas de un lugar a otro, sea dentro de un país o entre países.",
+    porque: "Explica fenómenos actuales como el crecimiento de las ciudades, la escasez de vivienda, o por qué ciertas regiones se vacían mientras otras se saturan.",
+    como: "Se mide con datos como la densidad de población (personas por km²) y las tasas de migración, analizando las causas (trabajo, conflictos, clima) detrás de cada movimiento."
+  },
+
+  // ===== ARTE Y DISEÑO =====
+  "arte y diseño": {
+    keywords: ["arte y diseño", "arte y diseno", "clase de arte"],
+    que: "Arte y Diseño es la materia donde explorás la expresión visual: dibujo, pintura, color, composición y las bases del diseño gráfico.",
+    porque: "Desarrolla creatividad, coordinación motora fina y una forma distinta de resolver problemas: pensando visualmente, no solo con palabras o números.",
+    como: "Se trabaja practicando técnicas (dibujo, pintura, collage), analizando obras de otros artistas, y creando proyectos propios con retroalimentación."
+  },
+  "teoría del color": {
+    keywords: ["teoría del color", "teoria del color", "colores primarios secundarios", "círculo cromático"],
+    que: "La teoría del color explica cómo se relacionan los colores entre sí: primarios (rojo, azul, amarillo), secundarios (los que resultan de mezclarlos) y combinaciones armónicas.",
+    porque: "Elegir bien los colores hace que un diseño se vea profesional o transmita la emoción correcta; una mala combinación puede arruinar hasta el mejor dibujo.",
+    como: "Se usa el círculo cromático para encontrar combinaciones armónicas: colores complementarios (opuestos en el círculo) generan contraste, y análogos (cercanos) generan armonía."
+  },
+  "técnicas de dibujo": {
+    keywords: ["técnicas de dibujo", "tecnicas de dibujo", "sombreado", "proporción en el dibujo"],
+    que: "Las técnicas de dibujo son los métodos para representar formas en papel: línea, sombreado, proporción y perspectiva.",
+    porque: "Son la base de cualquier expresión visual: sin dominar proporción y sombreado, cuesta mucho que un dibujo se vea realista o equilibrado.",
+    como: "Se practica observando objetos reales, midiendo proporciones con referencias (como comparar tamaños relativos) y aplicando sombras según de dónde viene la luz."
+  },
+  pintura: {
+    keywords: ["pintura", "acuarela", "óleo", "témpera"],
+    que: "La pintura es aplicar color sobre una superficie usando distintos materiales: témpera, acuarela, óleo o acrílico, cada uno con su técnica propia.",
+    porque: "Cada material te obliga a pensar distinto: la acuarela es transparente y fluida, mientras que el óleo permite corregir y trabajar capas gruesas.",
+    como: "Se aplica con pinceles, esponjas o espátulas, mezclando colores en una paleta antes de llevarlos al papel o lienzo, y controlando la cantidad de agua o medio según la técnica."
+  },
+  composición: {
+    keywords: ["composición artística", "composicion artistica", "regla de los tercios", "balance visual"],
+    que: "La composición es cómo se organizan los elementos dentro de una imagen: dónde va cada cosa para que la obra se vea equilibrada y dirija la mirada del espectador.",
+    porque: "Una buena composición hace que una imagen se sienta intencional y agradable, incluso si la técnica de dibujo no es perfecta.",
+    como: "Se aplica usando principios como la regla de los tercios (dividir la imagen en 9 partes y ubicar lo importante en las intersecciones) y el balance entre espacios llenos y vacíos."
+  },
+
+  // ===== MÚSICA =====
+  música: {
+    keywords: ["música", "musica", "clase de música"],
+    que: "Música es la materia donde aprendés a reconocer, leer y crear sonidos organizados en el tiempo: ritmo, melodía y armonía.",
+    porque: "Desarrolla el oído, la disciplina (practicar un instrumento requiere constancia) y una forma de expresión que no depende de las palabras.",
+    como: "Se trabaja combinando teoría (notas, ritmo, lectura de partituras) con práctica (cantar, tocar un instrumento, escuchar distintos géneros con atención)."
+  },
+  "notas musicales": {
+    keywords: ["notas musicales", "do re mi", "pentagrama", "escala musical"],
+    que: "Las notas musicales (Do, Re, Mi, Fa, Sol, La, Si) son los sonidos básicos que, combinados, forman melodías, y se escriben en un pentagrama (5 líneas).",
+    porque: "Son el alfabeto de la música: sin conocerlas no podés leer una partitura ni comunicarte con otros músicos sobre qué tocar.",
+    como: "Cada nota ocupa una posición específica en el pentagrama (una línea o un espacio), y su posición indica qué tan aguda o grave suena."
+  },
+  instrumentos: {
+    keywords: ["instrumentos musicales", "familias de instrumentos", "cuerda viento percusión"],
+    que: "Los instrumentos musicales se agrupan en familias según cómo producen sonido: cuerda (guitarra, violín), viento (flauta, trompeta) y percusión (tambor, batería).",
+    porque: "Cada familia tiene un timbre (color de sonido) distinto, y conocerlas te ayuda a identificar qué estás escuchando en cualquier pieza musical.",
+    como: "Las de cuerda vibran una cuerda tensada, las de viento hacen vibrar una columna de aire, y las de percusión producen sonido al golpear o sacudir el instrumento."
+  },
+  "ritmo y compás": {
+    keywords: ["ritmo y compás", "ritmo y compas", "tiempo musical", "negra corchea"],
+    que: "El ritmo es el patrón de duración de los sonidos en el tiempo, y el compás es cómo se agrupan esos tiempos en unidades repetidas (como 4/4 o 3/4).",
+    porque: "Es lo que hace que una canción 'se sienta' de cierta forma: un vals (3/4) se siente distinto a una marcha (4/4) aunque usen las mismas notas.",
+    como: "Se cuenta llevando el pulso (como contar 1-2-3-4 repetidamente) y ubicando las notas (negra, corchea, blanca) según cuánto duran dentro de ese pulso."
+  },
+  "géneros musicales": {
+    keywords: ["géneros musicales", "generos musicales", "rock pop cumbia clásica"],
+    que: "Los géneros musicales son categorías que agrupan música con características similares de ritmo, instrumentación y estilo: rock, pop, cumbia, clásica, folklore, entre muchos otros.",
+    porque: "Entender los géneros te ayuda a ubicar históricamente y culturalmente una pieza musical, y a ampliar tu gusto musical de forma más consciente.",
+    como: "Se distinguen por elementos como el tipo de instrumentos usados, el ritmo predominante y el contexto cultural o histórico en que surgieron."
+  },
+
+  // ===== EDUCACIÓN FÍSICA =====
+  "educación física": {
+    keywords: ["educación física", "educacion fisica", "clase de educación física", "gimnasia escolar"],
+    que: "Educación Física es la materia donde desarrollás tu cuerpo mediante ejercicio, deportes y juegos, además de aprender sobre el cuidado de tu salud física.",
+    porque: "El movimiento regular es clave para la salud física y mental, y esta materia también enseña trabajo en equipo, disciplina y respeto a las reglas.",
+    como: "Se trabaja con calentamiento, ejercicios de condición física, práctica de deportes específicos, y juegos que combinan diversión con desarrollo motor."
+  },
+  "deportes de equipo": {
+    keywords: ["deportes de equipo", "fútbol escolar", "vóley básquet", "trabajo en equipo deportivo"],
+    que: "Los deportes de equipo (fútbol, básquet, vóley) requieren coordinarse con compañeros para lograr un objetivo común dentro de reglas específicas.",
+    porque: "Enseñan comunicación, cooperación y a manejar tanto el éxito como la frustración de perder, habilidades que van más allá de la cancha.",
+    como: "Cada deporte tiene sus propias reglas y posiciones, pero todos comparten la necesidad de comunicación constante y estrategia grupal para ganarle al equipo contrario."
+  },
+  "condición física": {
+    keywords: ["condición física", "condicion fisica", "resistencia física", "flexibilidad y fuerza"],
+    que: "La condición física es tu capacidad corporal para moverte, incluyendo resistencia (aguantar esfuerzo), fuerza, flexibilidad y velocidad.",
+    porque: "Una buena condición física te ayuda en el día a día (subir escaleras sin cansarte, cargar cosas) y reduce el riesgo de varias enfermedades a largo plazo.",
+    como: "Se mejora con actividad física regular y variada: ejercicios de resistencia (correr, nadar), de fuerza (dominadas, sentadillas) y de flexibilidad (estiramientos)."
+  },
+  "calentamiento y estiramiento": {
+    keywords: ["calentamiento y estiramiento", "calentar antes de hacer ejercicio", "estiramiento muscular"],
+    que: "El calentamiento son ejercicios suaves antes de una actividad física intensa, y el estiramiento es elongar los músculos para mejorar flexibilidad y prevenir lesiones.",
+    porque: "Un cuerpo 'frío' es más propenso a lesionarse; calentar prepara músculos y articulaciones para el esfuerzo que van a hacer.",
+    como: "Se calienta con movimientos suaves que aumenten gradualmente el ritmo cardíaco (trote suave, saltos), y se estira sosteniendo cada posición sin rebotar, respirando de forma relajada."
+  },
+  "reglas de juegos comunes": {
+    keywords: ["reglas de juegos comunes", "reglas del fútbol", "reglas del básquet", "reglas del vóley"],
+    que: "Cada deporte escolar (fútbol, básquet, vóley) tiene reglas específicas sobre cómo se juega, se anota, y qué está permitido o prohibido dentro de la cancha.",
+    porque: "Sin reglas claras y respetadas por todos, el juego pierde sentido: las reglas son lo que hace posible competir de forma justa y segura.",
+    como: "Se aprenden practicando el deporte con supervisión, donde un árbitro o profesor va marcando cuándo se rompe una regla y corrigiendo en el momento."
+  },
+
+  // ===== EDUCACIÓN RELIGIOSA =====
+  "educación religiosa": {
+    keywords: ["educación religiosa", "educacion religiosa", "clase de religión", "religion escolar"],
+    que: "Educación Religiosa es la materia donde se estudian las principales religiones del mundo, sus creencias, historia y los valores éticos que promueven.",
+    porque: "Te ayuda a entender la diversidad de creencias que existen, algo clave para relacionarte con respeto en un mundo con muchas culturas y tradiciones distintas.",
+    como: "Se estudia de forma comparativa: orígenes de cada religión, sus textos y prácticas principales, y los valores éticos que comparten entre sí."
+  },
+  "religiones del mundo": {
+    keywords: ["religiones del mundo", "cristianismo islam judaísmo budismo hinduismo", "principales religiones"],
+    que: "Las religiones más practicadas del mundo incluyen el Cristianismo, el Islam, el Hinduismo, el Budismo y el Judaísmo, cada una con su propia historia, textos y prácticas.",
+    porque: "Conocerlas te da contexto para entender noticias, arte, festividades y costumbres de gente con creencias distintas a las tuyas, sin caer en prejuicios.",
+    como: "Se estudian de forma comparativa, viendo sus orígenes históricos, sus textos sagrados principales, y sus prácticas y festividades más importantes."
+  },
+  "valores éticos y religiosos": {
+    keywords: ["valores éticos y religiosos", "valores religiosos", "ética en las religiones"],
+    que: "Muchas religiones comparten valores éticos similares, como la honestidad, el respeto, la compasión y la ayuda al prójimo, aunque los expresen de forma distinta.",
+    porque: "Estudiarlos ayuda a ver que, más allá de las diferencias de culto, hay principios éticos compartidos entre culturas y tradiciones muy distintas.",
+    como: "Se compara cómo distintas tradiciones religiosas y filosóficas abordan preguntas éticas similares (qué es correcto, cómo tratar a otros) desde sus propios textos y enseñanzas."
+  },
+  "historia de las religiones": {
+    keywords: ["historia de las religiones", "origen de las religiones"],
+    que: "La historia de las religiones estudia cómo y cuándo surgieron las principales creencias religiosas, y cómo se expandieron y transformaron con el tiempo.",
+    porque: "Explica muchos eventos históricos y conflictos (y también arte, arquitectura y festividades) que solo tienen sentido conociendo su trasfondo religioso.",
+    como: "Se estudia con líneas de tiempo que ubican el surgimiento de cada religión, sus textos fundacionales y cómo se expandieron geográficamente."
+  },
+  "símbolos religiosos": {
+    keywords: ["símbolos religiosos", "simbolos religiosos", "cruz media luna estrella de david"],
+    que: "Los símbolos religiosos son imágenes u objetos que representan a una fe: la cruz (cristianismo), la media luna y estrella (islam), la estrella de David (judaísmo), entre otros.",
+    porque: "Reconocerlos te ayuda a identificar y entender referencias culturales y religiosas presentes en el arte, la arquitectura y la vida cotidiana de muchos países.",
+    como: "Cada símbolo tiene un origen histórico específico dentro de su tradición, y suele representar un concepto central de esa fe (sacrificio, unidad, alianza, entre otros)."
+  }
 };
+
+// Palabras vacías que se ignoran al analizar la pregunta
+const STOPWORDS = new Set([
+  "el","la","los","las","de","del","que","qué","por","para","con","es","son",
+  "un","una","unos","unas","y","o","a","en","como","cómo","cual","cuál",
+  "me","te","se","su","sus","este","esta","eso","esa","al","lo","le","les",
+  "mi","tu","yo","vos","tienes","tenes","hay","algo","sobre","acerca","cosa"
+]);
+
+function normalizeText(text) {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // saca tildes para comparar
+}
+
+function tokenize(text) {
+  return normalizeText(text)
+    .split(/[^a-z0-9]+/i)
+    .filter(w => w.length > 1 && !STOPWORDS.has(w));
+}
+
+// Detecta qué tipo de pregunta es, para elegir la variante de respuesta correcta
+function detectQuestionType(input) {
+  const n = normalizeText(input);
+  if (/\bquien\b|\bquienes\b/.test(n)) return "who";
+  if (/\bpor que\b|\bporque\b/.test(n)) return "porque";
+  if (/\bcomo\b/.test(n)) return "como";
+  if (/\bque es\b|\bque son\b|\bque\b/.test(n)) return "que";
+  return "que"; // default razonable
+}
+
+// Busca el tema con mejor coincidencia contra las keywords (match parcial, no exacto)
+function matchTopic(input, dictionary) {
+  const normalizedInput = normalizeText(input);
+  const inputTokens = tokenize(input);
+  let bestKey = null;
+  let bestScore = 0;
+
+  for (const [key, data] of Object.entries(dictionary)) {
+    const kws = data.keywords || [key];
+    for (const kw of kws) {
+      const normalizedKw = normalizeText(kw);
+      // Match de frase completa (ej: "por qué es correcto" contiene "correcto")
+      if (normalizedInput.includes(normalizedKw)) {
+        const score = normalizedKw.length * 2; // frases más largas pesan más
+        if (score > bestScore) {
+          bestScore = score;
+          bestKey = key;
+        }
+        continue;
+      }
+      // Match token por token (para plurales, variaciones sueltas)
+      const kwTokens = tokenize(kw);
+      const overlap = kwTokens.filter(t => inputTokens.includes(t)).length;
+      if (overlap > 0) {
+        const score = overlap * 3;
+        if (score > bestScore) {
+          bestScore = score;
+          bestKey = key;
+        }
+      }
+    }
+  }
+
+  return bestScore > 0 ? bestKey : null;
+}
+
+// Recuerda el último tema consultado para poder extenderlo o resumirlo
+let lastTopicKey = null;
+
+// Detecta si el usuario pide extender o minimizar la última respuesta
+function detectFormatCommand(input) {
+  const n = normalizeText(input);
+  const extendPattern = /\b(extiend\w*|extend\w*|ampli\w*|profundiz\w*|desarroll\w*|expand\w*|mas detalle\w*|mas largo|explica\w* mas|dame mas (informacion|info)|cuentame mas)\b/;
+  const minimizePattern = /\b(minimiz\w*|resum\w*|acort\w*|sintetiz\w*|mas corto|hazlo corto|en pocas palabras|tl ?dr|mas breve|en breve)\b/;
+  if (extendPattern.test(n)) return "extend";
+  if (minimizePattern.test(n)) return "minimize";
+  return null;
+}
+
+// Toma la primera oración de un texto (para la versión mini)
+function firstSentence(text) {
+  const match = text.match(/^.*?[.!?](?=\s|$)/);
+  return match ? match[0] : text;
+}
+
+// Arma una respuesta extendida combinando todos los ángulos disponibles del tema
+function buildExtendedResponse(topic) {
+  const sections = [];
+  if (topic.que) sections.push(`<div class="response-paragraph"><strong>Qué es:</strong> ${topic.que}</div>`);
+  if (topic.porque) sections.push(`<div class="response-paragraph"><strong>Por qué importa:</strong> ${topic.porque}</div>`);
+  if (topic.como) sections.push(`<div class="response-paragraph"><strong>Cómo funciona:</strong> ${topic.como}</div>`);
+  if (topic.who) sections.push(`<div class="response-paragraph"><strong>Quién lo propuso:</strong> ${topic.who}</div>`);
+  return `<div class="extended-response">${sections.join('')}</div>`;
+}
+
+function generateIntelligentResponse(input) {
+  // 0. Comando de formato (extender/minimizar) sobre el último tema hablado
+  const formatCmd = detectFormatCommand(input);
+  if (formatCmd) {
+    if (!lastTopicKey || !knowledgeBase[lastTopicKey]) {
+      return {
+        thinking: "Me piden extender/resumir pero no hay tema previo",
+        response: `Todavía no hablamos de ningún tema para extender o resumir. Preguntame algo primero (ej: "qué es la fotosíntesis") y después decime "extiéndelo" o "resumilo" 🤔`
+      };
+    }
+    const topic = knowledgeBase[lastTopicKey];
+    if (formatCmd === "extend") {
+      return {
+        thinking: "Me piden que profundice, dale, amplío la respuesta",
+        response: buildExtendedResponse(topic)
+      };
+    } else {
+      const mini = firstSentence(topic.que || Object.values(topic)[0]);
+      return {
+        thinking: "Me piden acortar, voy directo al grano",
+        response: mini
+      };
+    }
+  }
+
+  // 1. Frases fijas (saludos, meta-preguntas sobre Tyron/Aether)
+  const fixedKey = matchTopic(input, responses);
+  if (fixedKey) {
+    return responses[fixedKey];
+  }
+
+  // 2. Base de conocimiento con matching por similitud + tipo de pregunta
+  const topicKey = matchTopic(input, knowledgeBase);
+  if (topicKey) {
+    const topic = knowledgeBase[topicKey];
+    const qType = detectQuestionType(input);
+    const answer = topic[qType] || topic.que; // si no hay variante, cae al "qué es"
+    lastTopicKey = topicKey; // guardamos el tema para un posible "extiéndelo" después
+    return {
+      thinking: getRandomThinking(),
+      response: `<div class="extended-response"><div class="response-paragraph">${answer}</div></div>`
+    };
+  }
+
+  // 3. Sin match: fallback honesto, no relleno genérico haciéndose el que sabe
+  return {
+    thinking: "No tengo ese tema mapeado en mi base de conocimiento todavía",
+    response: `Che, la verdad es que no tengo ese tema cubierto en mi base de conocimiento por ahora. Puedo hablarte de política, matemáticas, ciencias sociales, ciencias naturales o filosofía (por ejemplo: democracia, cálculo, psicología, física, ética). Si querés, decime "ayuda" para ver todo lo que puedo hacer 🤔`
+  };
+}
 
 function addMessage(content, isUser = false) {
   const chatContainer = document.getElementById('chatContainer');
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
-  
+
   const messageContent = document.createElement('div');
   messageContent.className = 'message-content';
-  
+
   // Si es HTML (contiene tags), usar innerHTML. Si no, animar palabras
   if (content.includes('<') && content.includes('>')) {
     messageContent.innerHTML = content;
   } else {
-    // Animar palabras
     const words = content.split(' ');
     words.forEach((word, index) => {
       const wordSpan = document.createElement('span');
       wordSpan.className = 'animated-word';
       wordSpan.textContent = word + ' ';
       wordSpan.style.animationDelay = `${index * 0.05}s`;
-      
-      // Agregar animaciones aleatorias a algunas palabras
+
       const rand = Math.random();
       if (rand < 0.1) {
         wordSpan.classList.add('word-glitch');
@@ -1092,16 +1736,15 @@ function addMessage(content, isUser = false) {
       } else if (rand < 0.3) {
         wordSpan.classList.add('word-slide');
       }
-      
+
       messageContent.appendChild(wordSpan);
     });
   }
-  
+
   messageDiv.appendChild(messageContent);
   chatContainer.appendChild(messageDiv);
   chatContainer.scrollTop = chatContainer.scrollHeight;
-  
-  // Guardar en conversación actual
+
   const conversation = conversations.find(c => c.id === currentConversationId);
   if (conversation) {
     conversation.messages.push({
@@ -1119,11 +1762,10 @@ function addThinking(content) {
   const chatContainer = document.getElementById('chatContainer');
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message ai';
-  
+
   const messageContent = document.createElement('div');
   messageContent.className = 'message-content thinking';
-  
-  // Animar palabras del pensamiento
+
   const words = content.split(' ');
   words.forEach((word, index) => {
     const wordSpan = document.createElement('span');
@@ -1131,15 +1773,14 @@ function addThinking(content) {
     wordSpan.textContent = word + ' ';
     wordSpan.style.animationDelay = `${index * 0.05}s`;
     wordSpan.style.animationDuration = '0.3s';
-    
+
     messageContent.appendChild(wordSpan);
   });
-  
+
   messageDiv.appendChild(messageContent);
   chatContainer.appendChild(messageDiv);
   chatContainer.scrollTop = chatContainer.scrollHeight;
-  
-  // Guardar en conversación actual
+
   const conversation = conversations.find(c => c.id === currentConversationId);
   if (conversation) {
     conversation.messages.push({
@@ -1150,85 +1791,6 @@ function addThinking(content) {
     });
     saveConversations();
   }
-}
-
-function generateIntelligentResponse(input) {
-  const normalized = input.toLowerCase().trim();
-  
-  // 1. Primero checar respuestas predefinidas
-  for (const [key, data] of Object.entries(responses)) {
-    if (normalized.includes(key)) {
-      return data;
-    }
-  }
-  
-  // 2. Buscar en knowledge base y expandir a 5 párrafos
-  for (const [key, baseAnswer] of Object.entries(knowledgeBase)) {
-    if (normalized.includes(key)) {
-      const paragraphs = generateFiveParagraphs(baseAnswer, key, input);
-      return {
-        thinking: getRandomThinking(),
-        response: paragraphs
-      };
-    }
-  }
-  
-  // 3. Si no hay match exacto, analizar pregunta y generar respuesta inteligente
-  const intelligentResponse = analyzeAndRespond(input);
-  return {
-    thinking: getRandomThinking(),
-    response: intelligentResponse
-  };
-}
-
-function generateFiveParagraphs(baseAnswer, topic, originalQuestion) {
-  const paras = [
-    `<span class="paragraph-number">1.</span> ${baseAnswer}`,
-    
-    `<span class="paragraph-number">2.</span> Profundizando más en el tema de "${topic}", es importante entender que este concepto tiene raíces profundas en la historia del pensamiento humano. Ha evolucionado significativamente a través de diferentes períodos y culturas. Su importancia radica en cómo moldea nuestra comprensión del mundo y nuestras acciones cotidianas. Muchos pensadores han dedicado sus vidas a estudiar y desarrollar teorías sobre este tema. La interdisciplinariedad es clave para una comprensión completa.`,
-    
-    `<span class="paragraph-number">3.</span> Desde una perspectiva contemporánea, "${topic}" tiene implicaciones significativas en múltiples áreas. En el mundo moderno, enfrentamos desafíos únicos relacionados con este concepto. Las tecnologías emergentes y cambios sociales están redefiniendo cómo entendemos este tema. Es crucial estar actualizado sobre los desarrollos recientes en este campo. Las personas informadas pueden tomar mejores decisiones en relación a esto.`,
-    
-    `<span class="paragraph-number">4.</span> Existen diferentes perspectivas y enfoques para entender "${topic}". No hay una única verdad absoluta, sino múltiples interpretaciones válidas. Algunos argumentan desde una perspectiva teórica, otros desde lo práctico. La evidencia empírica juega un papel importante en validar o refutar diferentes posiciones. Es importante considerar múltiples puntos de vista antes de formar una opinión sólida.`,
-    
-    `<span class="paragraph-number">5.</span> Para concluir, "${topic}" es un tema fascinante que merece reflexión continua. Entender este concepto nos ayuda a comprender mejor el mundo que nos rodea y nuestro lugar en él. La educación y el pensamiento crítico son esenciales para navegar este tema. Cada individuo puede contribuir a una mejor comprensión colectiva del tema. Te animo a seguir explorando y cuestionando ideas sobre "${topic}".`
-  ];
-  
-  return `<div class="extended-response">${paras.map((p, i) => `<div class="response-paragraph">${p}</div>`).join('')}</div>`;
-}
-
-function analyzeAndRespond(input) {
-  // Detectar tipo de pregunta
-  const isHowQuestion = input.toLowerCase().includes("cómo");
-  const isWhyQuestion = input.toLowerCase().includes("por qué");
-  const isWhatQuestion = input.toLowerCase().includes("qué");
-  const isWhoQuestion = input.toLowerCase().includes("quién");
-  
-  let topic = "este tema";
-  const words = input.split(" ");
-  if (words.length > 2) {
-    topic = words.slice(2, 5).join(" ");
-  }
-  
-  const responses = [
-    `<div class="extended-response">
-      <div class="response-paragraph"><span class="paragraph-number">1.</span> Tu pregunta sobre "${topic}" es excelente y toca un aspecto fundamental del conocimiento humano. Este tipo de indagación refleja un pensamiento crítico que es invaluable en nuestro mundo moderno. La curiosidad es el motor del aprendizaje y la comprensión. Cada pregunta que nos hacemos nos acerca a una verdad más completa. Por eso valorizo mucho tu interés en profundizar.</div>
-      <div class="response-paragraph"><span class="paragraph-number">2.</span> Para entender "${topic}" completamente, debemos considerar múltiples dimensiones. Desde la perspectiva histórica, podemos ver cómo ha evolucionado. La perspectiva científica nos ofrece datos y metodología rigurosa. La perspectiva humanística nos permite entender el significado e impacto social. Cada perspectiva contribuye piezas valiosas al rompecabezas.</div>
-      <div class="response-paragraph"><span class="paragraph-number">3.</span> En el contexto actual, "${topic}" ha adquirido nueva relevancia debido a cambios globales. La tecnología, la globalización y los movimientos sociales están transformando cómo entendemos este concepto. Las generaciones jóvenes están aportando perspectivas frescas. Es un momento emocionante para el diálogo y la innovación en este área. Estamos siendo testigos de una evolución del pensamiento.</div>
-      <div class="response-paragraph"><span class="paragraph-number">4.</span> Existen debates vibrantes entre expertos sobre "${topic}". Algunos argumentan desde principios fundamentales, otros desde resultados empíricos. Hay consenso en algunos aspectos pero desacuerdo en otros. Esto es saludable porque nos impulsa a investigar más profundamente. No debemos tener miedo de la complejidad y el desacuerdo.</div>
-      <div class="response-paragraph"><span class="paragraph-number">5.</span> Mi recomendación es que explores "${topic}" desde múltiples fuentes. Lee académicos, pero también escucha a personas con experiencia práctica. Forma tu propia opinión basada en evidencia. Recuerda que el conocimiento es un viaje, no un destino. La humildad intelectual y la apertura mental son tus mejores aliados en esta búsqueda.</div>
-    </div>`,
-    
-    `<div class="extended-response">
-      <div class="response-paragraph"><span class="paragraph-number">1.</span> La pregunta que haces sobre "${topic}" es precisamente el tipo de pregunta que ha impulsado el progreso humano. Desde los primeros filósofos hasta los científicos contemporáneos, esta línea de indagación ha sido central. Tu curiosidad refleja un espíritu inquisitivo que es raro y valioso. Profundizar en "${topic}" nos ayuda a construir una visión más sofisticada del mundo. Esto es el principio del verdadero aprendizaje.</div>
-      <div class="response-paragraph"><span class="paragraph-number">2.</span> Cuando examinamos "${topic}" históricamente, vemos patrones fascinantes. Las civilizaciones antiguas ya contemplaban aspectos de esto. Con el tiempo, la comprensión ha madurado y se ha vuelto más compleja. Revoluciones científicas y sociales han transformado cómo entendemos "${topic}". La historia nos enseña que el cambio es inevitable y frecuentemente progresivo.</div>
-      <div class="response-paragraph"><span class="paragraph-number">3.</span> Desde una perspectiva sistémica, "${topic}" está interconectado con muchos otros fenómenos. No puede estudiarse aisladamente sin perder contexto crucial. Las interdependencias son complejas y a menudo contradictorias. Los sistemas dinámicos nos muestran que pequeños cambios pueden tener grandes efectos. Debemos pensar como ecólogos mentales, viendo las conexiones.</div>
-      <div class="response-paragraph"><span class="paragraph-number">4.</span> Los expertos contemporáneos proponen diferentes marcos para entender "${topic}". Algunos usan modelos matemáticos, otros análisis cualitativo. Las escuelas de pensamiento compiten pero también se enriquecen mutuamente. La investigación empírica está constantemente refinando nuestras teorías. Es un campo vivo y dinámico donde la verdad emerge gradualmente.</div>
-      <div class="response-paragraph"><span class="paragraph-number">5.</span> Mi consejo final sobre "${topic}" es que mantengas tu mente abierta pero crítica. Busca patrones, cuestiona supuestos, valida con evidencia. Habla con personas que piensan diferente a ti. Lee autores clásicos y contemporáneos. Sobre todo, recuerda que el conocimiento es un proceso, y tu viaje de aprendizaje sobre "${topic}" está apenas comenzando. ¡Que disfrutes el camino!</div>
-    </div>`
-  ];
-  
-  return responses[Math.floor(Math.random() * responses.length)];
 }
 
 function getRandomThinking() {

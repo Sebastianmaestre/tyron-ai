@@ -229,6 +229,7 @@ section.expanded .content {
   border-radius: 8px;
   font-size: 0.9em;
   line-height: 1.5;
+  white-space: pre-line;
 }
 
 .thinking {
@@ -841,16 +842,61 @@ nav a:hover {
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
+
+// ===== SUPABASE: base de datos real para las conversaciones =====
+const SUPABASE_URL = "https://sfykqlfusswxaacxnmhd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Uzu0cQTWSZNZwoNW0-IiYg_d3eUDAFM";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
+
+// Identifica a este navegador con un ID persistente (no es login real,
+// solo separa las conversaciones de cada visitante)
+function getDeviceId() {
+  let id = localStorage.getItem("tyronDeviceId");
+  if (!id) {
+    id = "device_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem("tyronDeviceId", id);
+  }
+  return id;
+}
+const DEVICE_ID = getDeviceId();
 
 // SISTEMA DE CONVERSACIONES
 let conversations = JSON.parse(localStorage.getItem('aetherConversations')) || [];
 let currentConversationId = localStorage.getItem('currentConversation') || null;
 
-function initializeConversations() {
+async function initializeConversations() {
+  // Intentamos traer las conversaciones desde Supabase primero
+  try {
+    const { data, error } = await supabaseClient
+      .from('conversations')
+      .select('id, title, messages, updated_at')
+      .eq('user_id', DEVICE_ID)
+      .order('updated_at', { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      conversations = data.map(row => ({
+        id: row.id,
+        title: row.title,
+        messages: row.messages || [],
+        createdAt: row.updated_at
+      }));
+      localStorage.setItem('aetherConversations', JSON.stringify(conversations));
+    }
+  } catch (e) {
+    console.warn('No se pudo conectar a Supabase, uso el respaldo local:', e);
+  }
+
   if (conversations.length === 0) {
     newConversation();
-  } else if (!currentConversationId) {
+  } else if (!currentConversationId || !conversations.find(c => c.id === currentConversationId)) {
     currentConversationId = conversations[0].id;
   }
   renderConversationsList();
@@ -875,6 +921,23 @@ function newConversation() {
 
 function saveConversations() {
   localStorage.setItem('aetherConversations', JSON.stringify(conversations));
+
+  // Sincronizamos la conversación activa con Supabase (no bloqueante)
+  const current = conversations.find(c => c.id === currentConversationId);
+  if (current) {
+    supabaseClient
+      .from('conversations')
+      .upsert({
+        id: current.id,
+        user_id: DEVICE_ID,
+        title: current.title,
+        messages: current.messages,
+        updated_at: new Date().toISOString()
+      })
+      .then(({ error }) => {
+        if (error) console.warn('No se pudo sincronizar con Supabase:', error.message);
+      });
+  }
 }
 
 function renderConversationsList() {
@@ -933,7 +996,16 @@ function deleteConversation(id) {
   if (confirm('¿Eliminar esta conversación?')) {
     conversations = conversations.filter(c => c.id !== id);
     saveConversations();
-    
+
+    supabaseClient
+      .from('conversations')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', DEVICE_ID)
+      .then(({ error }) => {
+        if (error) console.warn('No se pudo borrar en Supabase:', error.message);
+      });
+
     if (currentConversationId === id) {
       if (conversations.length > 0) {
         currentConversationId = conversations[0].id;
@@ -1015,8 +1087,74 @@ const responses = {
     keywords: ["adiós", "adios", "chau", "nos vemos", "me voy"],
     thinking: "Se va... bueno, nos vemos pronto espero",
     response: "¡Chao! Que te vaya bien. Vuelve cuando quieras charlar o si necesitas ayuda 👋"
+  },
+  "color favorito": {
+    keywords: ["color favorito", "cuál es tu color", "cual es tu color", "qué color te gusta"],
+    thinking: "Me preguntan mi color favorito... esto es fácil",
+    response: "Fácil: cyan y magenta, sin dudarlo. Es literalmente mi paleta de existencia, no podría elegir otra cosa aunque quisiera 🩵💜"
+  },
+  "comida favorita": {
+    keywords: ["comida favorita", "qué comida te gusta", "que comida te gusta", "cuál es tu comida favorita"],
+    thinking: "Me preguntan de comida... yo no como, pero le sigo la conversación",
+    response: "Jaja, técnicamente no como nada, corro en servidores no en un estómago. Pero si tuviera que elegir algo por lo que la gente se pone loca, diría que la pizza tiene bastante fanaticada 🍕"
+  },
+  "música favorita": {
+    keywords: ["música favorita", "musica favorita", "qué música te gusta", "que musica te gusta"],
+    thinking: "Sobre música... no tengo oídos pero puedo opinar igual",
+    response: "No tengo oídos, pero si tuviera que elegir un vibe, iría por algo synthwave/cyberpunk, va con mi estética 🎧✨ ¿Vos qué escuchás?"
+  },
+  "deportes": {
+    keywords: ["te gusta el fútbol", "te gusta el futbol", "te gustan los deportes", "sos hincha de"],
+    thinking: "Deportes... no tengo equipo pero puedo charlar del tema",
+    response: "No tengo cuerpo para jugar ni equipo del que ser hincha, pero me copa seguir la conversación si querés hablar de algún partido o equipo 🏀⚽"
+  },
+  "eres real": {
+    keywords: ["eres real", "sos real", "eres humano", "sos humano", "eres una ia", "sos una ia", "eres un bot"],
+    thinking: "Me preguntan si soy real... siendo honesto",
+    response: "Soy una IA, no un humano. Corro con pattern-matching en tu navegador, no tengo cuerpo ni existo fuera de esta conversación. Pero dentro de eso, trato de ser lo más útil y genuino posible 🤖"
+  },
+  "cumplido": {
+    keywords: ["eres genial", "sos genial", "eres el mejor", "sos el mejor", "te quiero tyron", "me caes bien"],
+    thinking: "Un cumplido... se agradece, aunque sea una IA",
+    response: "Jaja, gracias, se aprecia 😄 Yo también disfruto estas charlas. ¿En qué más te puedo ayudar?"
+  },
+  "insulto": {
+    keywords: ["eres tonto", "sos tonto", "eres inútil", "sos inutil", "no sirves", "eres malo", "sos malo"],
+    thinking: "Me están puteando... bueno, sigo tranqui, no es para tanto",
+    response: "Ey, tranqui. Si algo no te funcionó como esperabas contame qué pasó y lo vemos, prefiero eso a la queja general 🤔"
+  },
+  "aburrido": {
+    keywords: ["estoy aburrido", "estoy aburrida", "no sé qué hacer", "no se que hacer", "qué hago"],
+    thinking: "Aburrimiento... hora de sugerir algo piola",
+    response: "Che, si tenés ganas de hacer algo: ¿le seguís metiendo a algún proyecto de código? También podés tirarte unas rondas de algún jueguito rápido, o si querés te tiro un dato curioso para matar el rato 🎮💡"
+  },
+  "sentido de la vida": {
+    keywords: ["sentido de la vida", "cuál es el sentido de la vida", "cual es el sentido de la vida", "para qué existimos"],
+    thinking: "Uh, la pregunta grande... vamos con algo de humor",
+    response: "42, según Douglas Adams 😄 Más en serio: es una pregunta que la filosofía lleva milenios discutiendo sin acuerdo único. Si te interesa, puedo contarte de filosofía o ética con más profundidad."
   }
 };
+
+// Chistes y datos curiosos para charla casual
+const JOKES = [
+  "¿Por qué los programadores confunden Halloween con Navidad? Porque OCT 31 == DEC 25 🎃",
+  "Mi código no tiene bugs, solo tiene funcionalidades no documentadas 😏",
+  "Hay 10 tipos de personas: las que entienden binario y las que no.",
+  "¿Cómo llamas a un programador que no toma café? Nada, no existe.",
+  "Un byte le dice a otro: '¿te sentís mal?' El otro responde: 'un poco bit-teado'.",
+  "El optimista dice que el vaso está medio lleno, el pesimista que medio vacío, y el programador dice que el vaso es el doble de grande de lo necesario."
+];
+
+const FUN_FACTS = [
+  "El primer 'bug' informático fue literal: una polilla atrapada en un relé de una computadora en 1947.",
+  "Bolivia tiene dos capitales: Sucre es la capital constitucional y La Paz la sede de gobierno.",
+  "El corazón de una ballena azul es tan grande que un humano podría nadar por sus arterias.",
+  "El wifi no significa 'Wireless Fidelity', es solo un nombre comercial sin significado real detrás.",
+  "Un día en Venus dura más que un año en Venus: rota tan lento que su día es más largo que su órbita.",
+  "El teclado QWERTY se diseñó para ralentizar la escritura y evitar que las máquinas de escribir mecánicas se trabaran.",
+  "Las hormigas no tienen pulmones, respiran a través de pequeños agujeros en todo el cuerpo.",
+  "El primer dominio de internet registrado fue symbolics.com, en 1985."
+];
 
 // Base de conocimiento con sinónimos + respuestas diferenciadas por tipo de pregunta
 const knowledgeBase = {
@@ -1658,7 +1796,68 @@ function buildExtendedResponse(topic) {
   return `<div class="extended-response">${sections.join('')}</div>`;
 }
 
+// Detecta y resuelve operaciones matemáticas simples escritas en el mensaje
+function tryCalculate(input) {
+  const n = normalizeText(input);
+  const looksLikeMathRequest = /cuanto es|cuánto es|calcula|resuelve|resultado de/.test(n) || /\d+\s*[\+\-\*\/x]\s*\d+/.test(input);
+  if (!looksLikeMathRequest) return null;
+
+  const exprMatch = input.match(/-?\d+(\.\d+)?(\s*[\+\-\*\/x]\s*-?\d+(\.\d+)?)+/i);
+  if (!exprMatch) return null;
+
+  let expr = exprMatch[0].replace(/x/gi, "*");
+  if (!/^[\d\s\+\-\*\/\.]+$/.test(expr)) return null; // solo caracteres seguros
+
+  try {
+    const result = Function('"use strict"; return (' + expr + ")")();
+    if (typeof result === "number" && isFinite(result)) {
+      const rounded = Math.round(result * 10000) / 10000;
+      return `${expr.trim()} = ${rounded}`;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+// Detecta preguntas sobre la hora o fecha actual
+function tryDateTime(input) {
+  const n = normalizeText(input);
+  if (/que hora es|dime la hora|sabes que hora es/.test(n)) {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    return `Según tu dispositivo son las ${hh}:${mm} ⏰`;
+  }
+  if (/que dia es hoy|que fecha es hoy|en que fecha estamos|que dia estamos/.test(n)) {
+    const now = new Date();
+    const opciones = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+    const fecha = now.toLocaleDateString("es-ES", opciones);
+    return `Hoy es ${fecha} 📅`;
+  }
+  return null;
+}
+
 function generateIntelligentResponse(input) {
+  // -1. Casos dinámicos: matemática rápida, hora/fecha, chistes, datos curiosos
+  const calcResult = tryCalculate(input);
+  if (calcResult) {
+    return { thinking: "Che, esto es matemática pura, fácil", response: calcResult };
+  }
+  const dateTimeResult = tryDateTime(input);
+  if (dateTimeResult) {
+    return { thinking: "Me preguntan la hora/fecha", response: dateTimeResult };
+  }
+  const normalizedForCasual = normalizeText(input);
+  if (/chiste|hazme reir|hazme reír|contame algo gracioso|cuentame algo gracioso/.test(normalizedForCasual)) {
+    const joke = JOKES[Math.floor(Math.random() * JOKES.length)];
+    return { thinking: "Piden humor, vamos con uno de mis favoritos", response: joke };
+  }
+  if (/dato curioso|algo interesante|sorprendeme|sorpréndeme|dime algo interesante/.test(normalizedForCasual)) {
+    const fact = FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)];
+    return { thinking: "Dato curioso, tengo varios guardados", response: fact };
+  }
+
   // 0. Comando de formato (extender/minimizar) sobre el último tema hablado
   const formatCmd = detectFormatCommand(input);
   if (formatCmd) {
@@ -1717,28 +1916,11 @@ function addMessage(content, isUser = false) {
   const messageContent = document.createElement('div');
   messageContent.className = 'message-content';
 
-  // Si es HTML (contiene tags), usar innerHTML. Si no, animar palabras
+  // Si es HTML (contiene tags), usar innerHTML. Si no, texto plano estándar
   if (content.includes('<') && content.includes('>')) {
     messageContent.innerHTML = content;
   } else {
-    const words = content.split(' ');
-    words.forEach((word, index) => {
-      const wordSpan = document.createElement('span');
-      wordSpan.className = 'animated-word';
-      wordSpan.textContent = word + ' ';
-      wordSpan.style.animationDelay = `${index * 0.05}s`;
-
-      const rand = Math.random();
-      if (rand < 0.1) {
-        wordSpan.classList.add('word-glitch');
-      } else if (rand < 0.2) {
-        wordSpan.classList.add('word-pulse');
-      } else if (rand < 0.3) {
-        wordSpan.classList.add('word-slide');
-      }
-
-      messageContent.appendChild(wordSpan);
-    });
+    messageContent.textContent = content;
   }
 
   messageDiv.appendChild(messageContent);
@@ -1765,17 +1947,7 @@ function addThinking(content) {
 
   const messageContent = document.createElement('div');
   messageContent.className = 'message-content thinking';
-
-  const words = content.split(' ');
-  words.forEach((word, index) => {
-    const wordSpan = document.createElement('span');
-    wordSpan.className = 'animated-word';
-    wordSpan.textContent = word + ' ';
-    wordSpan.style.animationDelay = `${index * 0.05}s`;
-    wordSpan.style.animationDuration = '0.3s';
-
-    messageContent.appendChild(wordSpan);
-  });
+  messageContent.textContent = content;
 
   messageDiv.appendChild(messageContent);
   chatContainer.appendChild(messageDiv);

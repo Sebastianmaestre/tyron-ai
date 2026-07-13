@@ -351,6 +351,20 @@ section.expanded .content {
   margin: 0;
 }
 
+.code-block {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 15px;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  line-height: 1.5;
+  white-space: pre;
+  margin: 10px 0;
+  color: #00ff9d;
+}
+
 input[type="text"] {
   flex: 1;
   padding: 12px 15px;
@@ -2080,6 +2094,42 @@ function getRandomThinking() {
   return thinkings[Math.floor(Math.random() * thinkings.length)];
 }
 
+// ===== PROGRAMACIÓN CON IA (Gemini vía Edge Function de Supabase) =====
+// Detecta si el mensaje es un pedido de programación real (código, funciones, debugging)
+function detectCodeRequest(input) {
+  const n = normalizeText(input);
+  return /\b(codigo|código|funcion|función|script|algoritmo|programa\w*|debuggear|debug|compilar|escribe\w* (una|un) (funcion|script|codigo)|hazme (un|una) (programa|script|funcion|codigo)|en (python|javascript|java|c\+\+|html|css|typescript|php))\b/.test(n);
+}
+
+// Llama a la Edge Function de Supabase, que a su vez llama a Gemini con la key protegida
+async function askGeminiForCode(prompt) {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/generar-codigo`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: JSON.stringify({ prompt })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error del servidor (${response.status})`);
+  }
+
+  const data = await response.json();
+  if (data.error) throw new Error(data.error);
+  return data.text;
+}
+
+// Convierte texto con bloques ```código``` en HTML con formato de código
+function formatCodeResponse(text) {
+  const escaped = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const withCodeBlocks = escaped.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+    return `<pre class="code-block"><code>${code}</code></pre>`;
+  });
+  return `<div class="extended-response"><div class="response-paragraph">${withCodeBlocks.replace(/\n/g, "<br>")}</div></div>`;
+}
+
 function sendMessage() {
   const input = document.getElementById('chatInput');
   const message = input.value.trim();
@@ -2088,6 +2138,23 @@ function sendMessage() {
   
   addMessage(message, true);
   input.value = '';
+
+  // Pedidos de programación real van a Gemini (vía Edge Function), el resto sigue igual
+  if (detectCodeRequest(message)) {
+    setTimeout(() => {
+      addThinking("Che, esto es código de verdad, se lo paso a Gemini para que lo resuelva bien...");
+
+      askGeminiForCode(message)
+        .then(text => {
+          addMessage(formatCodeResponse(text), false);
+        })
+        .catch(err => {
+          console.warn("Error llamando a Gemini:", err);
+          addMessage(`Uh, tuve un problema conectando con Gemini para esto 😅 (${err.message}). Puede ser un tema temporal del servicio — probá de nuevo en un rato.`, false);
+        });
+    }, 500);
+    return;
+  }
   
   // Mostrar pensamiento
   setTimeout(() => {

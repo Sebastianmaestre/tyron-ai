@@ -35,7 +35,8 @@ footer{position:relative;z-index:1;text-align:center;padding:24px;color:var(--mu
 .goal-actions{display:flex;gap:6px;flex-wrap:wrap}.goal-actions button{padding:5px 8px;font-size:.65rem}
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
 function startVoice(){
  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){toast('Este navegador no ofrece reconocimiento de voz.');return}
  const R=window.SpeechRecognition||window.webkitSpeechRecognition, r=new R();
@@ -532,7 +533,7 @@ function classifyFile(f){
  if(['js','ts','jsx','tsx','py','php','java','c','cpp','h','cs','go','rs','html','css','json','xml','yaml','yml','md','txt','sql','sh','bat','ini','env'].includes(ext)||mime.startsWith('text/'))return 'Texto / Código';
  return 'Archivo';
 }
-async function analyzeFile(f){state.files=state.files.filter(x=>x.name!==file.name);state.files.push({name:file.name,size:file.size,type:file.type||'desconocido'});persist();renderHumanLayer();
+async function analyzeFile(f){state.files=state.files.filter(x=>x.name!==f.name);state.files.push({name:f.name,size:f.size,type:f.type||'desconocido'});persist();renderHumanLayer();
  const type=classifyFile(f);
  showAnalysis(type,'Analizando '+f.name+'…','Tipo: '+(f.type||'desconocido')+' · Tamaño: '+formatBytes(f.size),'');
  try{

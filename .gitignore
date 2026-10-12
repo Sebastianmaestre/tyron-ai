@@ -1,0 +1,19 @@
+# Secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+
+# Dependencies and builds
+node_modules/
+**/node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+Thumbs.db
+
+# Local platform configuration
+android/local.properties
+ios/Pods/

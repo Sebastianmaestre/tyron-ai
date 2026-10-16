@@ -52,8 +52,11 @@ function speakLast(){
 async function checkAI(){
  const el=$('aiStatus'); if(!el)return;
  try{
-   const r=await fetch('/api/health'); const d=await r.json();
-   el.textContent=d.ai?'IA: ONLINE':'IA: BACKEND ONLINE / SIN MODELO';
+   const r = await fetch('https://tyron-ai-backend.onrender.com/api/health');
+const d = await r.json();
+    el.textContent = r.ok && d.status === 'online'
+  ? 'IA: ONLINE'
+  : 'IA: OFFLINE';
  }catch(e){el.textContent='IA: OFFLINE';}
 }
 </script>
@@ -468,7 +471,13 @@ async function sendToTyron(text){
  const msg=(text||'').trim();
  state.mood=detectMood(msg); state.turns=(state.turns||0)+1; persist(); renderHumanLayer();
  try{
-   const recent=state.messages.slice(-12).map(m=>({role:m.role,text:m.text}));
+   const recent=state.messages
+  .slice(0, -1)
+  .slice(-12)
+  .map(m=>({
+    role: m.role === 'ai' ? 'assistant' : m.role,
+    text: m.text
+  }));
    const facts=contextFacts();
    const payload={
      message:msg,
@@ -481,12 +490,15 @@ async function sendToTyron(text){
      app:"Aether Nexus",
      version:"v6"
    };
-   const r=await fetch('/api/tyron',{
+   const r = await fetch('https://tyron-ai-backend.onrender.com/api/tyron',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify(payload)
    });
-   if(!r.ok) throw new Error('Backend HTTP '+r.status);
+   if(!r.ok){
+     const detalle = await r.text();
+     throw new Error('Backend HTTP '+r.status+': '+detalle);
+   }
    const data=await r.json();
    if(data.memory_to_save){
      const item={id:Date.now(),text:String(data.memory_to_save)};
@@ -496,8 +508,8 @@ async function sendToTyron(text){
    persist(); renderGoals(); renderHumanLayer();
    return data.reply || 'No recibí una respuesta válida del núcleo de Tyron.';
  }catch(err){
-   console.warn(err);
-   return 'No pude conectar con el núcleo IA de Tyron. Verifica que el backend esté ejecutándose en el mismo servidor y que la variable OPENAI_API_KEY (o el proveedor configurado) esté disponible.';
+   console.error('Error real de TYRON:', err);
+   return 'Error de conexión con TYRON: '+(err.message || String(err))+'. Revisa la consola del navegador (F12).';
 } }
 $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});
 $('fileInput').addEventListener('change',e=>{

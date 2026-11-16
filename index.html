@@ -52,8 +52,8 @@ function speakLast(){
 async function checkAI(){
  const el=$('aiStatus'); if(!el)return;
  try{
-   const r=await fetch('/api/health'); const d=await r.json();
-   el.textContent=d.ai?'IA: ONLINE':'IA: BACKEND ONLINE / SIN MODELO';
+   const r=await fetch('https://tyron-ai-backend.onrender.com/api/health'); const d=await r.json();
+   el.textContent=d.status==='online'?'IA: ONLINE':'IA: BACKEND OFFLINE';
  }catch(e){el.textContent='IA: OFFLINE';}
 }
 </script>
@@ -481,7 +481,7 @@ async function sendToTyron(text){
      app:"Aether Nexus",
      version:"v6"
    };
-   const r=await fetch('/api/tyron',{
+   const r=await fetch('https://tyron-ai-backend.onrender.com/api/tyron',{
      method:'POST',
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify(payload)
@@ -497,7 +497,7 @@ async function sendToTyron(text){
    return data.reply || 'No recibí una respuesta válida del núcleo de Tyron.';
  }catch(err){
    console.warn(err);
-   return 'No pude conectar con el núcleo IA de Tyron. Verifica que el backend esté ejecutándose en el mismo servidor y que la variable OPENAI_API_KEY (o el proveedor configurado) esté disponible.';
+   return 'No pude conectar con el núcleo IA de Tyron. Verifica la conexión con Render y la configuración de GEMINI_API_KEY.';
 } }
 $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});
 $('fileInput').addEventListener('change',e=>{

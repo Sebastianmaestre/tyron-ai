@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#050816">
-<title>Aether Nexus — Tyron Chat</title>
+<title>TYRON AI — Intelligent Assistant</title>
 <style>
 :root{--primary:#00ffff;--secondary:#0080ff;--accent:#ff00ff;--bg:#050816;--card:rgba(13,20,45,.78);--border:rgba(0,255,255,.24);--text:#f4fbff;--muted:#8da5b7;--good:#57ff9a;--warn:#ffd166;--danger:#ff5c8a;--shadow:0 0 28px rgba(0,255,255,.14)}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:"Courier New",monospace;color:var(--text);background:radial-gradient(circle at 15% 15%,rgba(0,255,255,.14),transparent 24%),radial-gradient(circle at 85% 25%,rgba(0,128,255,.18),transparent 28%),radial-gradient(circle at 50% 90%,rgba(255,0,255,.08),transparent 25%),linear-gradient(135deg,#050816,#0b1024 55%,#111c3d);min-height:100vh;overflow-x:hidden}body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.035) 1px,transparent 1px);background-size:42px 42px;pointer-events:none;z-index:0}
@@ -33,6 +33,262 @@ footer{position:relative;z-index:1;text-align:center;padding:24px;color:var(--mu
 .goal-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.76rem}.goal-head b{color:var(--primary)}
 .goal-bar{height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin:8px 0}.goal-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--primary));transition:.35s}
 .goal-actions{display:flex;gap:6px;flex-wrap:wrap}.goal-actions button{padding:5px 8px;font-size:.65rem}
+
+/* ===== TYRON AI INTERFACE V2 ===== */
+:root {
+  --primary: #168bff;
+  --secondary: #0755c9;
+  --accent: #f04455;
+  --bg: #05070d;
+  --card: rgba(13, 20, 34, .88);
+  --border: rgba(30, 125, 255, .22);
+  --text: #edf4ff;
+  --muted: #8493aa;
+  --good: #45e6a0;
+  --warn: #ffc857;
+  --danger: #ff5268;
+  --shadow: 0 12px 40px rgba(0, 0, 0, .35);
+}
+
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(0, 95, 210, .17), transparent 38%),
+    radial-gradient(ellipse at 90% 80%, rgba(180, 30, 55, .07), transparent 30%),
+    #05070d;
+}
+
+body:before {
+  background-image:
+    linear-gradient(rgba(35, 110, 210, .025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35, 110, 210, .025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+header {
+  text-align: left;
+  padding: 25px clamp(18px, 4vw, 55px);
+  background: rgba(5, 8, 16, .88);
+  border-bottom: 1px solid rgba(40, 110, 210, .18);
+  box-shadow: none;
+}
+
+header h1 {
+  color: #f2f7ff;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: 5px;
+  text-shadow: 0 0 25px rgba(15, 115, 255, .45);
+}
+
+header p {
+  color: #559fff;
+  letter-spacing: 3px;
+  font-size: .68rem;
+}
+
+.nav {
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.nav a {
+  color: #aabbd4;
+  font-size: .78rem;
+  border: 1px solid transparent;
+  transition: .2s;
+}
+
+.nav a:hover {
+  color: white;
+  background: rgba(20, 105, 220, .12);
+  border-color: var(--border);
+}
+
+.layout {
+  max-width: 1550px;
+  padding: 28px clamp(12px, 3vw, 35px);
+  gap: 22px;
+}
+
+.sidebar, .card {
+  background: linear-gradient(145deg, rgba(16, 25, 43, .96), rgba(8, 13, 24, .96));
+  border: 1px solid rgba(75, 125, 195, .17);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.sidebar {
+  padding: 20px;
+}
+
+.brand {
+  color: #68aaff;
+  letter-spacing: 2px;
+  font-size: .85rem;
+}
+
+.side-btn {
+  padding: 12px 13px;
+  border-radius: 9px;
+  background: rgba(30, 75, 130, .12);
+  border-color: rgba(70, 125, 200, .14);
+  color: #dce9ff;
+}
+
+.side-btn:hover {
+  background: rgba(20, 105, 220, .2);
+  border-color: #168bff;
+}
+
+.card {
+  padding: 23px;
+  transition: border-color .25s, transform .25s;
+}
+
+.card:hover {
+  border-color: rgba(35, 130, 255, .42);
+  transform: translateY(-2px);
+}
+
+.card h2 {
+  color: #69aaff;
+  text-shadow: none;
+  letter-spacing: .5px;
+}
+
+.subtitle, .small {
+  color: #8493aa;
+}
+
+button {
+  background: rgba(20, 85, 165, .18);
+  border: 1px solid rgba(55, 125, 220, .28);
+  border-radius: 9px;
+}
+
+button:hover {
+  border-color: #168bff;
+  box-shadow: 0 0 18px rgba(15, 115, 255, .15);
+}
+
+button.primary {
+  background: linear-gradient(110deg, #0755c9, #168bff);
+  border-color: #298eff;
+  color: white;
+}
+
+button.danger {
+  color: #ff8492;
+  border-color: rgba(240, 68, 85, .35);
+}
+
+.stat, .memory, #goalList .goal {
+  background: rgba(4, 10, 20, .55);
+  border-color: rgba(55, 115, 195, .2);
+  border-radius: 11px;
+}
+
+.stat b, .goal-head b {
+  color: #68aaff;
+}
+
+.feature-list li {
+  border-color: rgba(65, 115, 180, .13);
+}
+
+.feature-list li:before {
+  color: #f04455;
+}
+
+.pill {
+  color: #a9ccff;
+  background: rgba(20, 105, 220, .1);
+  border-color: rgba(55, 125, 220, .25);
+}
+
+.messages {
+  background: rgba(3, 8, 17, .7);
+  border-color: rgba(55, 125, 220, .2);
+  border-radius: 12px;
+}
+
+.msg.ai .bubble {
+  background: rgba(15, 75, 145, .2);
+  border-left: 2px solid #168bff;
+}
+
+.msg.user .bubble {
+  background: rgba(15, 90, 195, .3);
+  border-right: 2px solid #398fff;
+}
+
+.bubble {
+  border-radius: 12px;
+  font-size: .86rem;
+}
+
+.composer input {
+  background: rgba(3, 8, 17, .8);
+  border-color: rgba(55, 125, 220, .25);
+  border-radius: 10px;
+}
+
+.composer input:focus {
+  border-color: #168bff;
+  box-shadow: 0 0 15px rgba(15, 115, 255, .12);
+}
+
+.files, .editor-wrap, .terminal, textarea.editor,
+.analysis-content {
+  background: #060b14;
+  border-color: rgba(55, 125, 220, .2);
+}
+
+.file-analysis {
+  background: rgba(3, 8, 17, .65);
+  border-color: rgba(55, 125, 220, .25);
+  border-radius: 12px;
+}
+
+.analysis-head {
+  color: #68aaff;
+}
+
+.toast {
+  background: #101b2d;
+  border-color: rgba(55, 125, 220, .3);
+}
+
+.status-dot {
+  box-shadow: 0 0 10px var(--good);
+}
+
+@media(max-width: 600px) {
+  header {
+    padding: 20px 16px;
+  }
+
+  .layout {
+    padding: 15px 10px;
+    gap: 14px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .nav {
+    gap: 4px;
+  }
+
+  .nav a {
+    padding: 7px;
+    font-size: .7rem;
+  }
+}
+/* ===== END TYRON AI INTERFACE V2 ===== */
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -61,165 +317,12 @@ async function checkAI(){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
 
-<style>
-/* ===== CHAT-ONLY MODE ===== */
-html, body {
-  margin: 0 !important;
-  min-height: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
-  background: #070b14 !important;
-}
 
-body:before,
-header,
-.sidebar,
-.main > .grid > section:not(#chat),
-#tyron,
-#nucleo,
-#estado,
-#memory,
-#goals,
-#context-panel,
-#devcenter,
-#fileAnalysis,
-#cameraModal,
-.toast {
-  display: none !important;
-}
-
-.layout,
-.main,
-.grid,
-#chat {
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-#chat {
-  position: fixed !important;
-  inset: 0 !important;
-  height: 100dvh !important;
-  min-height: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: #070b14 !important;
-  box-shadow: none !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* Small, clean chat header */
-#chat > h2 {
-  flex: 0 0 auto;
-  margin: 0 !important;
-  padding: 16px 18px 12px !important;
-  font-size: 1.05rem !important;
-  letter-spacing: 1.5px !important;
-  border-bottom: 1px solid rgba(120,160,210,.14);
-  background: rgba(9,14,26,.96);
-}
-
-/* History gets almost all available screen space */
-#messages {
-  flex: 1 1 auto !important;
-  height: auto !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  padding: 18px 14px 24px !important;
-  margin: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: #070b14 !important;
-  scroll-behavior: smooth;
-}
-
-/* Cleaner messages */
-#messages .msg {
-  max-width: min(860px, 94vw) !important;
-  margin: 0 auto 14px !important;
-}
-
-#messages .bubble {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-  padding: 12px 15px !important;
-  border-radius: 14px !important;
-  box-shadow: none !important;
-}
-
-#messages .msg.user {
-  display: flex !important;
-  justify-content: flex-end !important;
-}
-
-#messages .msg.user .bubble {
-  max-width: 82% !important;
-}
-
-#messages .msg.ai .bubble {
-  max-width: 90% !important;
-}
-
-/* Compact composer */
-#chat .composer {
-  flex: 0 0 auto !important;
-  width: 100% !important;
-  max-width: 900px !important;
-  margin: 0 auto !important;
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) !important;
-  box-sizing: border-box !important;
-  background: #070b14 !important;
-  border-top: 1px solid rgba(120,160,210,.14);
-}
-
-#chatInput {
-  min-height: 46px !important;
-  max-height: 130px !important;
-  resize: vertical !important;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-}
-
-#chat .composer button {
-  min-height: 44px !important;
-}
-
-/* On mobile, keep the composer compact */
-@media (max-width: 600px) {
-  #chat > h2 {
-    padding: 13px 14px 10px !important;
-  }
-
-  #messages {
-    padding: 14px 10px 18px !important;
-  }
-
-  #messages .msg {
-    max-width: 96vw !important;
-    margin-bottom: 11px !important;
-  }
-
-  #messages .bubble {
-    font-size: 15px !important;
-    line-height: 1.55 !important;
-  }
-
-  #messages .msg.user .bubble,
-  #messages .msg.ai .bubble {
-    max-width: 88% !important;
-  }
-}
-</style>
 </head>
 <body>
 <header id="inicio">
-  <h1>◈ AETHER NEXUS</h1>
-  <p>SISTEMA TECNOLÓGICO INTELIGENTE · v4.0</p>
+  <h1>◈ TYRON AI</h1>
+  <p>INTELLIGENT PERSONAL ASSISTANT</p>
   <nav class="nav">
     <a href="#tyron">◉ Tyron</a><a href="#devcenter">⌘ Dev Center</a><a href="#nucleo">⬡ Núcleo</a><a href="#estado">◌ Estado</a><a href="#chat">✦ Chat</a>
   </nav>
@@ -227,7 +330,7 @@ header,
 
 <div class="layout">
   <aside class="sidebar">
-    <div class="brand">AETHER // CONTROL</div>
+    <div class="brand">TYRON // CONTROL CENTER</div>
     <div class="small"><span class="status-dot"></span>Nexus online</div>
     <button class="side-btn" onclick="scrollToId('chat')">✦ Abrir Tyron</button>
     <button class="side-btn" onclick="newChat()">＋ Nueva conversación</button>

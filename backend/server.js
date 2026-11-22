@@ -12,19 +12,25 @@ const allowedOrigins = (process.env.FRONTEND_ORIGIN ||
   "https://sebastianmaestre.github.io")
   .split(",").map(origin => origin.trim()).filter(Boolean);
 
+const isAllowedOrigin = (origin) =>
+  !origin ||
+  allowedOrigins.includes(origin) ||
+  /^https:\/\/[a-z0-9-]+-5500\.app\.github\.dev$/.test(origin);
+
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
-    return callback(new Error("Origen no autorizado."));
+    return callback(null, false);
   },
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));
+
 
 app.use(express.json({ limit: "32kb" }));
 

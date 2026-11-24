@@ -239,6 +239,188 @@ ${JSON.stringify(context)}
   }
 });
 
+
+// ===== GITHUB API: ACCESO DE SOLO LECTURA =====
+
+const GITHUB_OWNER = "Sebastianmaestre";
+const GITHUB_REPO = "tyron-ai";
+const GITHUB_API = "https://api.github.com";
+
+const githubLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: "Demasiadas consultas a GitHub. Inténtalo en un minuto."
+  }
+});
+
+function requireGitHubToken(_req, res, next) {
+  if (!process.env.GITHUB_TOKEN) {
+    return res.status(503).json({
+      success: false,
+      error: "La conexión con GitHub no está configurada."
+    });
+  }
+
+  next();
+}
+
+async function githubGet(path) {
+  const response = await fetch(GITHUB_API + path, {
+    method: "GET",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": "Bearer " + process.env.GITHUB_TOKEN,
+      "X-GitHub-Api-Version": "2022-11-28"
+    },
+    signal: AbortSignal.timeout(10000)
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data
+  };
+}
+
+function githubError(res, result) {
+  const status = result.status === 401 ? 502 :
+    result.status === 403 ? 502 :
+    result.status === 404 ? 404 : 502;
+
+  return res.status(status).json({
+    success: false,
+    error: result.status === 404
+      ? "No se encontró el repositorio o recurso solicitado."
+      : "GitHub no pudo completar la consulta.",
+    githubStatus: result.status
+  });
+}
+
+// Comprobar acceso al repositorio.
+app.get(
+  "/api/github/status",
+  githubLimiter,
+  requireGitHubToken,
+  async (_req, res) => {
+    try {
+      const result = await githubGet(
+        "/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO
+      );
+
+      if (!result.ok) return githubError(res, result);
+
+      return res.json({
+        success: true,
+        connected: true,
+        repository: result.data.full_name,
+        defaultBranch: result.data.default_branch,
+        private: result.data.private
+      });
+    } catch (error) {
+      console.error("GitHub connection error:", error.message);
+      return res.status(502).json({
+        success: false,
+        error: "No se pudo conectar con GitHub."
+      });
+    }
+  }
+);
+
+// Consultar información general del repositorio.
+app.get(
+  "/api/github/repository",
+  githubLimiter,
+  requireGitHubToken,
+  async (_req, res) => {
+    try {
+      const result = await githubGet(
+        "/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO
+      );
+
+      if (!result.ok) return githubError(res, result);
+
+      return res.json({
+        success: true,
+        repository: {
+          name: result.data.name,
+          fullName: result.data.full_name,
+          description: result.data.description,
+          defaultBranch: result.data.default_branch,
+          private: result.data.private,
+          htmlUrl: result.data.html_url,
+          updatedAt: result.data.updated_at
+        }
+      });
+    } catch (error) {
+      console.error("GitHub repository error:", error.message);
+      return res.status(502).json({
+        success: false,
+        error: "No se pudo consultar el repositorio."
+      });
+    }
+  }
+);
+
+// Listar archivos y carpetas sin descargar ni modificar su contenido.
+app.get(
+  "/api/github/tree",
+  githubLimiter,
+  requireGitHubToken,
+  async (req, res) => {
+    try {
+      const repo = await githubGet(
+        "/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO
+      );
+
+      if (!repo.ok) return githubError(res, repo);
+
+      const requestedRef = typeof req.query.ref === "string"
+        ? req.query.ref.slice(0, 200)
+        : repo.data.default_branch;
+
+      const tree = await githubGet(
+        "/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO +
+        "/git/trees/" + encodeURIComponent(requestedRef) +
+        "?recursive=1"
+      );
+
+      if (!tree.ok) return githubError(res, tree);
+
+      const entries = Array.isArray(tree.data.tree)
+        ? tree.data.tree
+        : [];
+
+      return res.json({
+        success: true,
+        repository: repo.data.full_name,
+        ref: requestedRef,
+        total: entries.length,
+        truncated: entries.length > 500 || Boolean(tree.data.truncated),
+        files: entries.slice(0, 500).map(item => ({
+          path: item.path,
+          type: item.type,
+          size: item.size || null,
+          sha: item.sha
+        }))
+      });
+    } catch (error) {
+      console.error("GitHub tree error:", error.message);
+      return res.status(502).json({
+        success: false,
+        error: "No se pudo consultar la estructura del repositorio."
+      });
+    }
+  }
+);
+
+// ===== FIN DE GITHUB API =====
+
 app.listen(PORT, () => {
   console.log("TYRON AI activo en puerto " + PORT);
   console.log("Modelo configurado: " + MODEL);
